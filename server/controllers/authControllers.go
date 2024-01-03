@@ -46,7 +46,9 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"success": "User registered",
+	})
 }
 
 func Login(c *gin.Context) {
@@ -98,10 +100,14 @@ func Login(c *gin.Context) {
 
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("token", tokenString, 3600, "", "", false, true)
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"success": "Logged in",
+	})
 }
 
 func Logout(c *gin.Context) {
 	c.SetCookie("token", "", -1, "", "", false, true)
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"success": "Logged out",
+	})
 }

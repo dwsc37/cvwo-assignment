@@ -39,7 +39,9 @@ func Subscribe(c *gin.Context) {
 
 	database.DB.Model(&user).Association("Modules").Append(&module)
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"success": "Subscribed",
+	})
 }
 
 func Unsubscribe(c *gin.Context) {
@@ -70,7 +72,9 @@ func Unsubscribe(c *gin.Context) {
 
 	database.DB.Model(&user).Association("Modules").Delete(&module)
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"success": "Unsubscribed",
+	})
 }
 
 func GetAllModules(c *gin.Context) {

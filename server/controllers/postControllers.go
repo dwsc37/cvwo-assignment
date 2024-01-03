@@ -133,7 +133,9 @@ func DeletePost(c *gin.Context) {
 
 	database.DB.Unscoped().Delete(&models.Post{}, postID)
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"success": "Post deleted",
+	})
 }
 
 func GetAllPosts(c *gin.Context) {

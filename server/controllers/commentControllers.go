@@ -131,5 +131,7 @@ func DeleteComment(c *gin.Context) {
 
 	database.DB.Unscoped().Delete(&models.Comment{}, commentID)
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"success": "Comment deleted",
+	})
 }

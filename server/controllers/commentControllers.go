@@ -44,7 +44,7 @@ func CreateComment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"comment": comment,
+		"message": "Comment created!",
 	})
 }
 
@@ -94,7 +94,7 @@ func EditComment(c *gin.Context) {
 	database.DB.Model(&comment).Updates(models.Comment{Body: body.Body})
 
 	c.JSON(http.StatusOK, gin.H{
-		"comment": comment,
+		"message": "Comment edited!",
 	})
 }
 
@@ -132,6 +132,6 @@ func DeleteComment(c *gin.Context) {
 	database.DB.Unscoped().Delete(&models.Comment{}, commentID)
 
 	c.JSON(http.StatusOK, gin.H{
-		"success": "Comment deleted",
+		"message": "Comment deleted!",
 	})
 }

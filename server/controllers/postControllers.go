@@ -45,7 +45,7 @@ func CreatePost(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"post": post,
+		"message": "Post created!",
 	})
 }
 
@@ -96,7 +96,7 @@ func EditPost(c *gin.Context) {
 	database.DB.Model(&post).Updates(models.Post{Title: body.Title, Body: body.Body})
 
 	c.JSON(http.StatusOK, gin.H{
-		"post": post,
+		"message": "Post edited!",
 	})
 }
 
@@ -134,7 +134,7 @@ func DeletePost(c *gin.Context) {
 	database.DB.Unscoped().Delete(&models.Post{}, postID)
 
 	c.JSON(http.StatusOK, gin.H{
-		"success": "Post deleted",
+		"message": "Post deleted!",
 	})
 }
 

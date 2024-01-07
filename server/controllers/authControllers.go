@@ -40,14 +40,14 @@ func Register(c *gin.Context) {
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to create user (username already exists)",
+			"error": "Failed to register (username already exists)",
 		})
 
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"success": "User registered",
+		"message": "User registered",
 	})
 }
 
@@ -101,13 +101,19 @@ func Login(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("token", tokenString, 3600, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
-		"success": "Logged in",
+		"message": "Logged in",
+	})
+}
+
+func Validate(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User validated",
 	})
 }
 
 func Logout(c *gin.Context) {
 	c.SetCookie("token", "", -1, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
-		"success": "Logged out",
+		"message": "Logged out",
 	})
 }

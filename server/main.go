@@ -1,6 +1,9 @@
 package main
 
 import (
+	"net/http"
+	"os"
+
 	"github.com/dwsc37/cvwo-assignment/controllers"
 	"github.com/dwsc37/cvwo-assignment/database"
 	"github.com/dwsc37/cvwo-assignment/initialisers"
@@ -18,41 +21,51 @@ func init() {
 func main() {
 	r := gin.Default()
 
-	//auth routes
-	r.POST("/register", controllers.Register)
-	r.POST("/login", controllers.Login)
+	// Enable CORS for all routes
+	r.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", os.Getenv("CLIENT"))       // Adjust the domain accordingly
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE") // Add the allowed HTTP methods
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		c.Header("Access-Control-Allow-Credentials", "true")
 
-	r.Use(middleware.RequireAuth)
-	r.GET("/ping", func(c *gin.Context) {
-		userValue, _ := c.Get("user")
-		c.JSON(200, gin.H{
-			"user": userValue,
-		})
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusOK)
+			return
+		}
+
+		c.Next()
 	})
 
+	//auth routes
+	r.POST("/api/register", controllers.Register)
+	r.POST("/api/login", controllers.Login)
+
+	r.Use(middleware.RequireAuth)
+	r.GET("/api/validate", controllers.Validate)
+
 	//module routes
-	r.PUT("/modules/:moduleID/subscribe", controllers.Subscribe)
-	r.PUT("/modules/:moduleID/unsubscribe", controllers.Unsubscribe)
-	r.GET("/modules/", controllers.GetAllModules)
-	r.GET("/modules/:moduleID", controllers.GetModule)
-	r.GET("/modules/:moduleID/posts", controllers.GetModulePosts)
+	r.PUT("/api/modules/:moduleID/subscribe", controllers.Subscribe)
+	r.PUT("/api/modules/:moduleID/unsubscribe", controllers.Unsubscribe)
+	r.GET("/api/modules/", controllers.GetAllModules)
+	r.GET("/api/modules/:moduleID", controllers.GetModule)
+	r.GET("/api/modules/:moduleID/posts", controllers.GetModulePosts)
 
 	//post routes
-	r.POST("/posts/create/:moduleID", controllers.CreatePost)
-	r.PUT("/posts/edit/:postID", controllers.EditPost)
-	r.DELETE("/posts/delete/:postID", controllers.DeletePost)
-	r.GET("/posts/all", controllers.GetAllPosts)
-	r.GET("/posts/feed", controllers.GetFeedPosts)
-	r.GET("/posts/:postID", controllers.GetPost)
-	r.GET("/posts/:postID/comments", controllers.GetPostComments)
+	r.POST("/api/posts/create/:moduleID", controllers.CreatePost)
+	r.PUT("/api/posts/edit/:postID", controllers.EditPost)
+	r.DELETE("/api/posts/delete/:postID", controllers.DeletePost)
+	r.GET("/api/posts/all", controllers.GetAllPosts)
+	r.GET("/api/posts/feed", controllers.GetFeedPosts)
+	r.GET("/api/posts/:postID", controllers.GetPost)
+	r.GET("/api/posts/:postID/comments", controllers.GetPostComments)
 
 	//comment routes
-	r.POST("/comments/create/:postID", controllers.CreateComment)
-	r.PUT("/comments/edit/:commentID", controllers.EditComment)
-	r.DELETE("/comments/delete/:commentID", controllers.DeleteComment)
+	r.POST("/api/comments/create/:postID", controllers.CreateComment)
+	r.PUT("/api/comments/edit/:commentID", controllers.EditComment)
+	r.DELETE("/api/comments/delete/:commentID", controllers.DeleteComment)
 
 	//logout
-	r.POST("/logout", controllers.Logout)
+	r.POST("/api/logout", controllers.Logout)
 
 	r.Run()
 }

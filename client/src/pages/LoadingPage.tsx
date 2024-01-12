@@ -1,10 +1,12 @@
-import { RingLoader } from 'react-spinners';
+import { useTheme } from "@mui/material";
+import ReactLoading from "react-loading";
 
 const LoadingPage = () => {
+  const theme = useTheme();
   return (
-    <div className="loading-spinner-container">
-      <RingLoader size={150} color={'#36D7B7'} />
-    </div>
+      <div>
+        <ReactLoading type="spin" color={theme.palette.primary.main}/>
+      </div>
   );
 };
 

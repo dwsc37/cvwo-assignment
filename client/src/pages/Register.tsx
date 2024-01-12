@@ -2,8 +2,8 @@ import { Avatar, Button, Paper, TextField, Typography, useTheme, } from "@mui/ma
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import { useRegisterMutation } from "../redux/api";
 import { Credentials, Message } from "../interfaces/interaces";
+import { useRegisterMutation } from "../redux/api";
 
 
 const Register = () => {
@@ -42,7 +42,7 @@ const Register = () => {
                     return payload.data.error;
                 }
                 catch{
-                    return "Error";
+                    return "Error, something went wrong!";
                 }
             }, 
         });
@@ -53,7 +53,6 @@ const Register = () => {
             onSubmit={handleSubmit}  
             elevation={10} 
             sx={{
-                backgroundColor: theme.palette.background.default,
                 padding: "20px",
                 width: "20%",
                 minWidth: "200px",
@@ -64,20 +63,13 @@ const Register = () => {
                 justifyItems: "center",
                 gap: "10px"
         }}>
-            <Avatar sx={{
-                backgroundColor: theme.palette.primary.main,
-            }} />
-            <Typography variant="h3"gutterBottom sx={{
-                color: theme.palette.text.primary,
-                fontWeight: "bold"
-            }}>
+            <Avatar sx={{backgroundColor: theme.palette.primary.main,}} />
+            <Typography variant="h3"gutterBottom fontWeight="bold">
                 Register
             </Typography>
             <TextField label="Username" placeholder="Enter username" value={credentials.username} onChange={handleUsernameChange} fullWidth required/>
             <TextField label="Password" placeholder="Enter password" type="password" value={credentials.password} onChange={handlePasswordChange} fullWidth required/>
-            <Button type="submit" variant="contained" fullWidth sx={{
-                backgroundColor: theme.palette.primary.main,
-            }}>
+            <Button type="submit" variant="contained" fullWidth sx={{fontWeight: "bold", fontSize:18}}>
                 Register
             </Button>
             <Typography>

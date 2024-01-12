@@ -2,15 +2,14 @@ import LoginIcon from '@mui/icons-material/Login';
 import { Avatar, Button, Paper, TextField, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
-import { useLoginMutation } from '../redux/api';
+import { Link } from "react-router-dom";
 import { Credentials, Message } from '../interfaces/interaces';
+import { useLoginMutation } from '../redux/api';
 
 
 const Login = () => {
     const theme = useTheme();
     const [login] = useLoginMutation();
-    const navigate = useNavigate();
     const [credentials, setCredentials] = useState<Credentials>({
         username: "",
         password: "",
@@ -35,7 +34,6 @@ const Login = () => {
         toast.promise(promise, {
             loading: "Logging in...",
             success: (payload : Message) =>{
-                navigate("/register");
                 return payload.message;
             },
             error: (payload) =>{
@@ -43,7 +41,7 @@ const Login = () => {
                     return payload.data.error;
                 }
                 catch{
-                    return "Error";
+                    return "Error, something went wrong!";
                 } 
             }, 
         });
@@ -54,7 +52,6 @@ const Login = () => {
             onSubmit={handleSubmit}  
             elevation={10} 
             sx={{
-                backgroundColor: theme.palette.background.default,
                 padding: "20px",
                 width: "20%",
                 minWidth: "200px",
@@ -65,20 +62,13 @@ const Login = () => {
                 justifyItems: "center",
                 gap: "10px"
         }}>
-            <Avatar sx={{
-                backgroundColor: theme.palette.primary.main,
-            }}><LoginIcon /></Avatar>
-            <Typography variant="h3"gutterBottom sx={{
-                color: theme.palette.text.primary,
-                fontWeight: "bold"
-            }}>
+            <Avatar sx={{backgroundColor:theme.palette.primary.main }}><LoginIcon /></Avatar>
+            <Typography variant="h3"gutterBottom fontWeight="bold">
                 Login
             </Typography>
             <TextField label="Username" placeholder="Enter username" value={credentials.username} onChange={handleUsernameChange} fullWidth required/>
             <TextField label="Password" placeholder="Enter password" type="password" value={credentials.password} onChange={handlePasswordChange} fullWidth required/>
-            <Button type="submit" variant="contained" fullWidth sx={{
-                backgroundColor: theme.palette.primary.main,
-            }}>
+            <Button type="submit" variant="contained" fullWidth sx={{fontWeight: "bold", fontSize:18}}>
                 Login
             </Button>
             <Typography>

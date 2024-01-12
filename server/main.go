@@ -43,15 +43,17 @@ func main() {
 	r.Use(middleware.RequireAuth)
 	r.GET("/api/validate", controllers.Validate)
 
+	//subscription routes
+	r.PUT("/api/subs/sub/:moduleCode", controllers.Subscribe)
+	r.PUT("/api/subs/unsub/:moduleCode", controllers.Unsubscribe)
+	r.GET("/api/subs", controllers.GetSubscribedModules)
+
 	//module routes
-	r.PUT("/api/modules/:moduleID/subscribe", controllers.Subscribe)
-	r.PUT("/api/modules/:moduleID/unsubscribe", controllers.Unsubscribe)
-	r.GET("/api/modules/", controllers.GetAllModules)
-	r.GET("/api/modules/:moduleID", controllers.GetModule)
-	r.GET("/api/modules/:moduleID/posts", controllers.GetModulePosts)
+	r.GET("/api/modules/:moduleCode", controllers.GetModule)
+	r.GET("/api/modules/all", controllers.GetAllModules)
 
 	//post routes
-	r.POST("/api/posts/create/:moduleID", controllers.CreatePost)
+	r.POST("/api/posts/create/:moduleCode", controllers.CreatePost)
 	r.PUT("/api/posts/edit/:postID", controllers.EditPost)
 	r.DELETE("/api/posts/delete/:postID", controllers.DeletePost)
 	r.GET("/api/posts/all", controllers.GetAllPosts)

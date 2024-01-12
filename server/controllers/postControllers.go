@@ -25,15 +25,9 @@ func CreatePost(c *gin.Context) {
 
 	userValue, _ := c.Get("user")
 
-	moduleID, err := strconv.Atoi(c.Param("moduleID"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid module id",
-		})
+	moduleCode := c.Param("moduleCode")
 
-		return
-	}
-	post := models.Post{Title: body.Title, Body: body.Body, ModuleID: uint(moduleID), UserID: userValue.(models.User).ID}
+	post := models.Post{Title: body.Title, Body: body.Body, ModuleCode: moduleCode, Username: userValue.(models.User).Username}
 	result := database.DB.Create(&post)
 
 	if result.Error != nil {
@@ -85,7 +79,7 @@ func EditPost(c *gin.Context) {
 		return
 	}
 
-	if post.UserID != userValue.(models.User).ID {
+	if post.Username != userValue.(models.User).Username {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Post does not belong to you",
 		})
@@ -123,7 +117,7 @@ func DeletePost(c *gin.Context) {
 		return
 	}
 
-	if post.UserID != userValue.(models.User).ID {
+	if post.Username != userValue.(models.User).Username {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Post does not belong to you",
 		})

@@ -26,4 +26,26 @@ func SyncDB() {
 
 func ResetDB() {
 	DB.Migrator().DropTable(&models.User{}, &models.Module{}, &models.Post{}, &models.Comment{})
+	SyncDB()
+	PreloadModules()
+}
+
+func PreloadModules() {
+	modules := []models.Module{
+		{Code: "CS1101S", Name: "Programming Methodology I"},
+		{Code: "CS1231S", Name: "Discrete Structures"},
+		{Code: "ES2660", Name: "Communicating in the Information Age"},
+		{Code: "MA1521", Name: "Calculus for Computing"},
+		{Code: "MA1522", Name: "Linear Algebra for Computing"},
+		{Code: "GEC1044", Name: "Chinese Medicine: Theory and Practice"},
+		{Code: "CS2030S", Name: "Programming Methodology II"},
+		{Code: "CS2040S", Name: "Data Structures and Algorithms"},
+		{Code: "IS1108", Name: "Digital Ethics and Data Privacy"},
+		{Code: "CFG1002", Name: "Career Catalyst"},
+		{Code: "GEA1000", Name: "Quantitative Reasoning with Data"},
+	}
+
+	for _, module := range modules {
+		DB.Create(&module)
+	}
 }

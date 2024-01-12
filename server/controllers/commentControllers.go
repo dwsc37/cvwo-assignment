@@ -32,7 +32,7 @@ func CreateComment(c *gin.Context) {
 
 		return
 	}
-	comment := models.Comment{Body: body.Body, PostID: uint(postID), UserID: userValue.(models.User).ID}
+	comment := models.Comment{Body: body.Body, PostID: uint(postID), Username: userValue.(models.User).Username}
 	result := database.DB.Create(&comment)
 
 	if result.Error != nil {
@@ -83,7 +83,7 @@ func EditComment(c *gin.Context) {
 		return
 	}
 
-	if comment.UserID != userValue.(models.User).ID {
+	if comment.Username != userValue.(models.User).Username {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Comment does not belong to you",
 		})
@@ -121,7 +121,7 @@ func DeleteComment(c *gin.Context) {
 		return
 	}
 
-	if comment.UserID != userValue.(models.User).ID {
+	if comment.Username != userValue.(models.User).Username {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Comment does not belong to you",
 		})

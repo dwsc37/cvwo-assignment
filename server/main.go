@@ -23,8 +23,8 @@ func main() {
 
 	// Enable CORS for all routes
 	r.Use(func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", os.Getenv("CLIENT"))       // Adjust the domain accordingly
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE") // Add the allowed HTTP methods
+		c.Header("Access-Control-Allow-Origin", os.Getenv("CLIENT"))              // Adjust the domain accordingly
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE") // Add the allowed HTTP methods
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		c.Header("Access-Control-Allow-Credentials", "true")
 
@@ -49,21 +49,27 @@ func main() {
 	r.GET("/api/subs", controllers.GetSubscribedModules)
 
 	//module routes
-	r.GET("/api/modules/:moduleCode", controllers.GetModule)
 	r.GET("/api/modules/all", controllers.GetAllModules)
+	r.GET("/api/module/:moduleCode", controllers.GetModule)
+	r.GET("/api/module/:moduleCode/posts", controllers.GetModulePosts)
+
+	//tag routes
+	r.GET("/api/tags", controllers.GetTags)
 
 	//post routes
-	r.POST("/api/posts/create/:moduleCode", controllers.CreatePost)
-	r.PUT("/api/posts/edit/:postID", controllers.EditPost)
+	r.POST("/api/posts/create", controllers.CreatePost)
+	r.PUT("/api/posts/like/:postID", controllers.LikePost)
+	r.PUT("/api/posts/unlike/:postID", controllers.UnlikePost)
+	r.PATCH("/api/posts/edit/:postID", controllers.EditPost)
 	r.DELETE("/api/posts/delete/:postID", controllers.DeletePost)
-	r.GET("/api/posts/all", controllers.GetAllPosts)
-	r.GET("/api/posts/feed", controllers.GetFeedPosts)
-	r.GET("/api/posts/:postID", controllers.GetPost)
-	r.GET("/api/posts/:postID/comments", controllers.GetPostComments)
+	r.GET("/api/post/:postID", controllers.GetPost)
+	r.GET("/api/post/:postID/comments",controllers.GetPostComments)
 
 	//comment routes
 	r.POST("/api/comments/create/:postID", controllers.CreateComment)
-	r.PUT("/api/comments/edit/:commentID", controllers.EditComment)
+	r.PUT("/api/comments/like/:commentID", controllers.LikeComment)
+	r.PUT("/api/comments/unlike/:commentID", controllers.UnlikeComment)
+	r.PATCH("/api/comments/edit/:commentID", controllers.EditComment)
 	r.DELETE("/api/comments/delete/:commentID", controllers.DeleteComment)
 
 	//logout

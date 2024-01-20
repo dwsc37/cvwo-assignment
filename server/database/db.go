@@ -22,12 +22,15 @@ func ConnectToDB() {
 
 func SyncDB() {
 	DB.AutoMigrate(&models.User{}, &models.Module{}, &models.Post{}, &models.Comment{})
+	//PreloadModules()
+	//PreloadTags()
 }
 
 func ResetDB() {
 	DB.Migrator().DropTable(&models.User{}, &models.Module{}, &models.Post{}, &models.Comment{})
 	SyncDB()
 	PreloadModules()
+	PreloadTags()
 }
 
 func PreloadModules() {
@@ -43,9 +46,21 @@ func PreloadModules() {
 		{Code: "IS1108", Name: "Digital Ethics and Data Privacy"},
 		{Code: "CFG1002", Name: "Career Catalyst"},
 		{Code: "GEA1000", Name: "Quantitative Reasoning with Data"},
+		{Code: "GESS1004", Name: "Singapore and India: Emerging Relations"},
+		{Code: "EL1101E", Name: "The Nature of Language"},
 	}
 
 	for _, module := range modules {
 		DB.Create(&module)
+	}
+}
+
+func PreloadTags() {
+	tags := []models.Tag{
+		{Name: "Admin"}, {Name: "Discussion"}, {Name: "Assessments"},
+	}
+
+	for _, tag := range tags {
+		DB.Create(&tag)
 	}
 }

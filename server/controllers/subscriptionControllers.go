@@ -12,18 +12,16 @@ import (
 func Subscribe(c *gin.Context) {
 	userValue, _ := c.Get("user")
 
-	var user models.User
+	var user models.User = userValue.(models.User)
 	var module models.Module
-
-	database.DB.First(&user, userValue.(models.User).ID)
 
 	moduleCode := c.Param("moduleCode")
 
-	database.DB.First(&module, "code = ?", moduleCode)
+	result := database.DB.First(&module, "code = ?", moduleCode)
 
-	if user.ID == 0 || module.ID == 0 {
+	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid user or module",
+			"error": "Invalid module",
 		})
 
 		return
@@ -39,18 +37,16 @@ func Subscribe(c *gin.Context) {
 func Unsubscribe(c *gin.Context) {
 	userValue, _ := c.Get("user")
 
-	var user models.User
+	var user models.User = userValue.(models.User)
 	var module models.Module
-
-	database.DB.First(&user, userValue.(models.User).ID)
 
 	moduleCode := c.Param("moduleCode")
 
-	database.DB.First(&module, "code = ?", moduleCode)
+	result := database.DB.First(&module, "code = ?", moduleCode)
 
-	if user.ID == 0 || module.ID == 0 {
+	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid user or module",
+			"error": "Invalid module",
 		})
 
 		return
@@ -74,7 +70,5 @@ func GetSubscribedModules(c *gin.Context) {
 	sort.Slice(subscribedModules, func(i, j int) bool {
 		return subscribedModules[i].Code < subscribedModules[j].Code
 	})
-	c.JSON(http.StatusOK, gin.H{
-		"modules": subscribedModules,
-	})
+	c.JSON(http.StatusOK, subscribedModules)
 }

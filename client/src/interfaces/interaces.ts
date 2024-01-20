@@ -1,36 +1,58 @@
 //AUTH interfaces
+
 export interface Credentials {
-    username: string,
-    password: string,
+    Username: string;
+    Password: string;
 }
 
 export interface Message {
-    message: string
+    message: string;
 }
 
-//POST interfaces 
-export interface Post {
-    ID: number,
-    Title: number,
-    Body: number,
+//TAG interfaces
+export interface Tag {
+    ID: number;
+    Name: string;
 }
+
+//POST interfaces
+export interface Post {
+    Title: string;
+    Body: string;
+    Tags: Tag[];
+    ModuleCode: string;
+}
+
+export interface PostUpdate extends Post {
+    ID: number;
+}
+export interface PostDetailed extends PostUpdate {
+    LikeCount: number;
+    CommentCount: number;
+    IsLiked: boolean;
+    CreatedAt: Date;
+    Username: string;
+}
+
+//COMMENT interfaces
+export interface CommentDetailed {
+    ID: number;
+    CreatedAt: Date;
+    Body: string;
+    PostID: number;
+    Username: string;
+    LikeCount: number;
+    IsLiked: boolean;
+}
+
 //MODULE interfaces
 export interface Module {
-    ID: number,
-    Code: string,
-    Name: string,
+    ID: number;
+    Code: string;
+    Name: string;
 }
 
 export interface ModuleDetailed extends Module {
-    UserCount: number,
-    IsSubscribed: boolean,
-}
-
-
-export interface ModuleResponse {
-    module: Module | ModuleDetailed
-}
-
-export interface ModuleListResponse {
-    modules: Module[] | ModuleDetailed []
+    UserCount: number;
+    IsSubscribed: boolean;
 }

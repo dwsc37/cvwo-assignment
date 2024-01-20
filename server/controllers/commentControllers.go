@@ -48,6 +48,66 @@ func CreateComment(c *gin.Context) {
 	})
 }
 
+func LikeComment(c *gin.Context) {
+	userValue, _ := c.Get("user")
+
+	var user models.User = userValue.(models.User)
+	var comment models.Comment
+
+	commentID, err := strconv.Atoi(c.Param("commentID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid comment id",
+		})
+
+		return
+	}
+	database.DB.First(&comment, commentID)
+
+	if comment.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid comment id",
+		})
+
+		return
+	}
+	database.DB.Model(&user).Association("LikedComments").Append(&comment)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Liked comment!",
+	})
+}
+
+func UnlikeComment(c *gin.Context) {
+	userValue, _ := c.Get("user")
+
+	var user models.User = userValue.(models.User)
+	var comment models.Comment
+
+	commentID, err := strconv.Atoi(c.Param("commentID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid comment id",
+		})
+
+		return
+	}
+	database.DB.First(&comment, commentID)
+
+	if comment.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid comment id",
+		})
+
+		return
+	}
+	database.DB.Model(&user).Association("LikedComments").Delete(&comment)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Liked comment!",
+	})
+}
+
 func EditComment(c *gin.Context) {
 	var body struct {
 		Body string

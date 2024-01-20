@@ -1,56 +1,65 @@
-import LoginIcon from '@mui/icons-material/Login';
-import { Avatar, Button, Paper, TextField, Typography, useTheme } from "@mui/material";
+import LoginIcon from "@mui/icons-material/Login";
+import {
+    Avatar,
+    Button,
+    Paper,
+    TextField,
+    Typography,
+    useTheme,
+} from "@mui/material";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { Credentials, Message } from '../interfaces/interaces';
-import { useLoginMutation } from '../redux/api';
-
+import { Credentials, Message } from "../interfaces/interaces";
+import { useLoginMutation } from "../redux/api";
 
 const Login = () => {
     const theme = useTheme();
     const [login] = useLoginMutation();
     const [credentials, setCredentials] = useState<Credentials>({
-        username: "",
-        password: "",
+        Username: "",
+        Password: "",
     });
 
-    const handleUsernameChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleUsernameChange = (
+        event: React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
         setCredentials((prevCredentials) => ({
             ...prevCredentials,
-            username: event.target.value,
+            Username: event.target.value,
         }));
-    }
-    const handlePasswordChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    };
+    const handlePasswordChange = (
+        event: React.ChangeEvent<HTMLTextAreaElement>
+    ) => {
         setCredentials((prevCredentials) => ({
             ...prevCredentials,
-            password: event.target.value,
+            Password: event.target.value,
         }));
-    }   
+    };
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        
+
         const promise = login(credentials).unwrap();
         toast.promise(promise, {
             loading: "Logging in...",
-            success: (payload : Message) =>{
+            success: (payload: Message) => {
                 return payload.message;
             },
-            error: (payload) =>{
-                try{
+            error: (payload) => {
+                try {
                     return payload.data.error;
-                }
-                catch{
+                } catch {
                     return "Error, something went wrong!";
-                } 
-            }, 
+                }
+            },
         });
-    }
-    return (    
+    };
+    return (
         <Paper
-            component="form" 
-            onSubmit={handleSubmit}  
-            elevation={10} 
+            component="form"
+            onSubmit={handleSubmit}
+            elevation={10}
             sx={{
                 padding: "20px",
                 width: "20%",
@@ -60,23 +69,45 @@ const Login = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyItems: "center",
-                gap: "10px"
-        }}>
-            <Avatar sx={{backgroundColor:theme.palette.primary.main }}><LoginIcon /></Avatar>
-            <Typography variant="h3"gutterBottom fontWeight="bold">
+                gap: "10px",
+            }}
+        >
+            <Avatar sx={{ backgroundColor: theme.palette.primary.main }}>
+                <LoginIcon />
+            </Avatar>
+            <Typography variant="h3" gutterBottom fontWeight="bold">
                 Login
             </Typography>
-            <TextField label="Username" placeholder="Enter username" value={credentials.username} onChange={handleUsernameChange} fullWidth required/>
-            <TextField label="Password" placeholder="Enter password" type="password" value={credentials.password} onChange={handlePasswordChange} fullWidth required/>
-            <Button type="submit" variant="contained" fullWidth sx={{fontWeight: "bold", fontSize:18}}>
+            <TextField
+                label="Username"
+                placeholder="Enter username"
+                value={credentials.Username}
+                onChange={handleUsernameChange}
+                fullWidth
+                required
+            />
+            <TextField
+                label="Password"
+                placeholder="Enter password"
+                type="password"
+                value={credentials.Password}
+                onChange={handlePasswordChange}
+                fullWidth
+                required
+            />
+            <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                sx={{ fontWeight: "bold", fontSize: 18 }}
+            >
                 Login
             </Button>
             <Typography>
-                New user? <Link to="/register">Register here
-                </Link>
+                New user? <Link to="/register">Register here</Link>
             </Typography>
         </Paper>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;

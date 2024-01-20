@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/dwsc37/cvwo-assignment/database"
@@ -11,8 +12,10 @@ import (
 
 func CreatePost(c *gin.Context) {
 	var body struct {
-		Title string
-		Body  string
+		Title      string
+		Body       string
+		Tags       []models.Tag
+		ModuleCode string
 	}
 
 	if c.Bind(&body) != nil {
@@ -25,9 +28,7 @@ func CreatePost(c *gin.Context) {
 
 	userValue, _ := c.Get("user")
 
-	moduleCode := c.Param("moduleCode")
-
-	post := models.Post{Title: body.Title, Body: body.Body, ModuleCode: moduleCode, Username: userValue.(models.User).Username}
+	post := models.Post{Title: body.Title, Body: body.Body, ModuleCode: body.ModuleCode, Username: userValue.(models.User).Username}
 	result := database.DB.Create(&post)
 
 	if result.Error != nil {
@@ -37,16 +38,82 @@ func CreatePost(c *gin.Context) {
 
 		return
 	}
+	for _, tag := range body.Tags {
+		database.DB.Model(&post).Association("Tags").Append(&tag)
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Post created!",
 	})
 }
 
+func LikePost(c *gin.Context) {
+	userValue, _ := c.Get("user")
+
+	var user models.User = userValue.(models.User)
+	var post models.Post
+
+	postID, err := strconv.Atoi(c.Param("postID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid post id",
+		})
+
+		return
+	}
+	database.DB.First(&post, postID)
+
+	if post.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid post id",
+		})
+
+		return
+	}
+	database.DB.Model(&user).Association("LikedPosts").Append(&post)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Liked post!",
+	})
+
+}
+
+func UnlikePost(c *gin.Context) {
+	userValue, _ := c.Get("user")
+
+	var user models.User = userValue.(models.User)
+	var post models.Post
+
+	postID, err := strconv.Atoi(c.Param("postID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid post id",
+		})
+
+		return
+	}
+	database.DB.First(&post, postID)
+
+	if post.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid post id",
+		})
+
+		return
+	}
+	database.DB.Model(&user).Association("LikedPosts").Delete(&post)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Unliked post!",
+	})
+}
+
 func EditPost(c *gin.Context) {
 	var body struct {
-		Title string
-		Body  string
+		Title      string
+		Body       string
+		Tags       []models.Tag
+		ModuleCode string
 	}
 
 	if c.Bind(&body) != nil {
@@ -71,7 +138,7 @@ func EditPost(c *gin.Context) {
 	var post models.Post
 	database.DB.First(&post, postID)
 
-	if post.ID == 0 {
+	if post.ID == 0 || post.ModuleCode != body.ModuleCode {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid post id",
 		})
@@ -86,8 +153,8 @@ func EditPost(c *gin.Context) {
 
 		return
 	}
-
 	database.DB.Model(&post).Updates(models.Post{Title: body.Title, Body: body.Body})
+	database.DB.Model(&post).Association("Tags").Replace(body.Tags)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Post edited!",
@@ -97,6 +164,7 @@ func EditPost(c *gin.Context) {
 func DeletePost(c *gin.Context) {
 	userValue, _ := c.Get("user")
 
+	var post models.Post
 	postID, err := strconv.Atoi(c.Param("postID"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -106,7 +174,6 @@ func DeletePost(c *gin.Context) {
 		return
 	}
 
-	var post models.Post
 	database.DB.First(&post, postID)
 
 	if post.ID == 0 {
@@ -125,39 +192,48 @@ func DeletePost(c *gin.Context) {
 		return
 	}
 
-	database.DB.Unscoped().Delete(&models.Post{}, postID)
+	database.DB.Unscoped().Delete(&models.Post{}, post.ID)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Post deleted!",
 	})
 }
 
-func GetAllPosts(c *gin.Context) {
-	var posts []models.Post
-	database.DB.Find(&posts)
+func GetPost(c *gin.Context) {
+	userValue, _ := c.Get("user")
+	var post models.Post
+	postID, err := strconv.Atoi(c.Param("postID"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid post id",
+		})
 
-	c.JSON(http.StatusOK, gin.H{
-		"posts": posts,
-	})
+		return
+	}
+	database.DB.Preload("Tags").Find(&post, postID)
+
+	if post.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid post id",
+		})
+
+		return
+	}
+	commentCount := database.DB.Model(&post).Association("Comments").Count()
+	likeCount := database.DB.Model(&post).Association("LikedUsers").Count()
+	isLiked := (database.DB.Model(&post).Where("id = ?", userValue.(models.User).ID).Association("LikedUsers").Count()) == 1
+	postResponse := PostResponse{Post: post, LikeCount: uint(likeCount), CommentCount: uint(commentCount), IsLiked: isLiked}
+	c.JSON(http.StatusOK, postResponse)
 }
 
-func GetFeedPosts(c *gin.Context) {
+type CommentRespone struct{
+	models.Comment
+	LikeCount uint
+	IsLiked bool
+}
+func GetPostComments(c *gin.Context) {
 	userValue, _ := c.Get("user")
 
-	var user models.User
-	var posts []models.Post
-	database.DB.Preload("Modules.Posts").First(&user, userValue.(models.User).ID)
-
-	for _, module := range user.Modules {
-		posts = append(posts, module.Posts...)
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"posts": posts,
-	})
-}
-
-func GetPost(c *gin.Context) {
-	var post models.Post
 	postID, err := strconv.Atoi(c.Param("postID"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -166,40 +242,20 @@ func GetPost(c *gin.Context) {
 
 		return
 	}
-	database.DB.Find(&post, postID)
 
-	if post.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid post id",
-		})
+	var comments []models.Comment
+	database.DB.Preload("LikedUsers").Where("post_id = ?", postID).Find(&comments)
+	
+	var commentResponses []CommentRespone
+	for _, comment := range comments{
+		likeCount := database.DB.Model(&comment).Association("LikedUsers").Count()
+		isLiked := (database.DB.Model(&comment).Where("id = ?", userValue.(models.User).ID).Association("LikedUsers").Count()) == 1
 
-		return
+		commentResponses = append(commentResponses, CommentRespone{Comment: comment, LikeCount: uint(likeCount), IsLiked: isLiked})
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"post": post,
+
+	sort.Slice(commentResponses, func(i, j int) bool {
+		return commentResponses[i].CreatedAt.After(commentResponses[j].CreatedAt)
 	})
-}
-
-func GetPostComments(c *gin.Context) {
-	var post models.Post
-	postID, err := strconv.Atoi(c.Param("postID"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid post id",
-		})
-
-		return
-	}
-	database.DB.Preload("Comments").Find(&post, postID)
-
-	if post.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid post id",
-		})
-
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"comments": post.Comments,
-	})
+	c.JSON(http.StatusOK, commentResponses)
 }

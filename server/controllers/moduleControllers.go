@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"sort"
 
 	"github.com/dwsc37/cvwo-assignment/database"
 	"github.com/dwsc37/cvwo-assignment/models"
@@ -39,9 +40,7 @@ func GetAllModules(c *gin.Context) {
 		moduleResponses = append(moduleResponses, ModuleRespone{Module: module, UserCount: uint(userCount), IsSubscribed: isSubscribed})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"modules": moduleResponses,
-	})
+	c.JSON(http.StatusOK, moduleResponses)
 }
 
 func GetModule(c *gin.Context) {
@@ -57,7 +56,43 @@ func GetModule(c *gin.Context) {
 
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"module": module,
+
+	userCount := database.DB.Model(&module).Association("Users").Count()
+
+	userValue, _ := c.Get("user")
+	isSubscribed := (database.DB.Model(&module).Where("id = ?", userValue.(models.User).ID).Association("Users").Count()) == 1
+	moduleResponse := ModuleRespone{Module: module, UserCount: uint(userCount), IsSubscribed: isSubscribed}
+
+	c.JSON(http.StatusOK, moduleResponse)
+}
+
+type PostResponse struct {
+	models.Post
+	LikeCount    uint
+	CommentCount uint
+	IsLiked      bool
+}
+
+func GetModulePosts(c *gin.Context) {
+	moduleCode := c.Param("moduleCode")
+
+	var posts []models.Post
+
+	database.DB.Preload("Tags").Where("module_code = ?", moduleCode).Find(&posts)
+
+	userValue, _ := c.Get("user")
+
+	var postListResponse []PostResponse
+
+	for _, post := range posts {
+		commentCount := database.DB.Model(&post).Association("Comments").Count()
+		likeCount := database.DB.Model(&post).Association("LikedUsers").Count()
+		isLiked := (database.DB.Model(&post).Where("id = ?", userValue.(models.User).ID).Association("LikedUsers").Count()) == 1
+		postListResponse = append(postListResponse, PostResponse{Post: post, LikeCount: uint(likeCount), CommentCount: uint(commentCount), IsLiked: isLiked})
+	}
+
+	sort.Slice(postListResponse, func(i, j int) bool {
+		return postListResponse[i].CreatedAt.After(postListResponse[j].CreatedAt)
 	})
+	c.JSON(http.StatusOK, postListResponse)
 }

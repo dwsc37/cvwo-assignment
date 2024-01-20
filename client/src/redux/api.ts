@@ -1,19 +1,29 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { Credentials, Message, Module, ModuleDetailed, ModuleListResponse } from '../interfaces/interaces';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+    CommentDetailed,
+    Credentials,
+    Message,
+    ModuleDetailed,
+    Post,
+    PostDetailed,
+    PostUpdate,
+    Tag,
+} from "../interfaces/interaces";
+import { Module } from "./../interfaces/interaces";
 
-
-const baseUrl = "http://localhost:8000/api"
+const baseUrl = "http://localhost:8000/api";
 
 export const api = createApi({
-    tagTypes: ["USER", "SUBS"], 
+    tagTypes: ["USER", "MODULES", "MODULE", "POST", "COMMENTS", "FEED"],
     baseQuery: fetchBaseQuery({
         baseUrl,
-        credentials: 'include',
+        credentials: "include",
         prepareHeaders: (headers, { getState }) => {
-            headers.set('Content-Type', 'application/json'); // Set default Content-Type to JSON
+            headers.set("Content-Type", "application/json"); // Set default Content-Type to JSON
             return headers;
         },
     }),
+    keepUnusedDataFor: 60,
     endpoints: (builder) => ({
         //AUTH routes
         register: builder.mutation<Message, Credentials>({
@@ -21,7 +31,7 @@ export const api = createApi({
                 url: "register",
                 method: "POST",
                 body: user,
-            })
+            }),
         }),
         login: builder.mutation<Message, Credentials>({
             query: (user) => ({
@@ -31,18 +41,11 @@ export const api = createApi({
             }),
             invalidatesTags: ["USER"],
         }),
-        validate: builder.query<Message, void>({
+        validate: builder.query<Message, void | string>({
             query: () => ({
                 url: "validate",
             }),
-            providesTags: ["USER"],
-        }),
-        
-        //USER routes
-        getUser: builder.query({
-            query: () => ({
-                url: "user",
-            }),
+            keepUnusedDataFor: 0,
             providesTags: ["USER"],
         }),
 
@@ -51,48 +54,236 @@ export const api = createApi({
             query: () => ({
                 url: "modules/all",
             }),
-            transformResponse: (data: ModuleListResponse) => data.modules as ModuleDetailed[],
-            providesTags: ["SUBS"],
+            providesTags: ["MODULES"],
         }),
 
-        //SUBS routes
-        getSubs: builder.query<Module[],void>({
-            query: () => ({
-                url: "subs"
+        getModule: builder.query<ModuleDetailed, string>({
+            query: (moduleCode) => ({
+                url: "module/" + moduleCode,
             }),
-            transformResponse: (data : ModuleListResponse) => data.modules,
-            providesTags: ["USER","SUBS"],
+            providesTags: (result, error, arg) => [{ type: "MODULE", id: arg }],
+        }),
+
+        getModulePosts: builder.query<PostDetailed[], string>({
+            query: (moduleCode) => ({
+                url: "module/" + moduleCode + "/posts",
+            }),
+            providesTags: (result, error, arg) => [{ type: "FEED", id: arg }],
+        }),
+
+        //TAG routes
+        getTags: builder.query<Tag[], void>({
+            query: () => ({
+                url: "tags",
+            }),
+        }),
+
+        //POST routes
+        createPost: builder.mutation<Message, Post>({
+            query: (post) => ({
+                url: "posts/create",
+                method: "POST",
+                body: post,
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "FEED", id: arg.ModuleCode },
+                { type: "FEED", id: "Home" },
+                { type: "FEED", id: "All" },
+            ],
+        }),
+        likePost: builder.mutation<Message, PostDetailed>({
+            query: (post) => ({
+                url: "posts/like/" + post.ID,
+                method: "PUT",
+                body: post,
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "FEED", id: arg.ModuleCode },
+                { type: "POST", id: arg.ID },
+                { type: "FEED", id: "Home" },
+                { type: "FEED", id: "All" },
+            ],
+        }),
+        unlikePost: builder.mutation<Message, PostDetailed>({
+            query: (post) => ({
+                url: "posts/unlike/" + post.ID,
+                method: "PUT",
+                body: post,
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "FEED", id: arg.ModuleCode },
+                { type: "POST", id: arg.ID },
+                { type: "FEED", id: "Home" },
+                { type: "FEED", id: "All" },
+            ],
+        }),
+        editPost: builder.mutation<Message, PostDetailed>({
+            query: (post) => ({
+                url: "posts/edit/" + post.ID,
+                method: "PATCH",
+                body: post,
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "FEED", id: arg.ModuleCode },
+                { type: "POST", id: arg.ID },
+                { type: "FEED", id: "Home" },
+                { type: "FEED", id: "All" },
+            ],
+        }),
+        deletePost: builder.mutation<Message, PostDetailed>({
+            query: (post) => ({
+                url: "posts/delete/" + post.ID,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "FEED", id: arg.ModuleCode },
+                { type: "POST", id: arg.ID },
+                { type: "FEED", id: "Home" },
+                { type: "FEED", id: "All" },
+            ],
+        }),
+        getPost: builder.query<PostDetailed, number>({
+            query: (postID) => ({
+                url: "/post/" + postID,
+            }),
+            providesTags: (result, error, arg) => [{ type: "POST", id: arg }],
+        }),
+        getPostComments: builder.query<CommentDetailed[], number>({
+            query: (postID) => ({
+                url: "/post/" + postID + "/comments",
+            }),
+            providesTags: (result, error, arg) => [
+                { type: "COMMENTS", id: arg },
+            ],
+        }),
+
+        //COMMENTS routes
+        createComment: builder.mutation<
+            Message,
+            { comment: string; postID: number; moduleCode: string }
+        >({
+            query: ({ comment, postID, moduleCode }) => ({
+                url: "/comments/create/" + postID,
+                method: "POST",
+                body: { Body: comment },
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "COMMENTS", id: arg.postID },
+                { type: "FEED", id: arg.moduleCode },
+                { type: "POST", id: arg.postID },
+                { type: "FEED", id: "Home" },
+                { type: "FEED", id: "All" },
+            ],
+        }),
+        likeComment: builder.mutation<Message, CommentDetailed>({
+            query: (comment) => ({
+                url: "/comments/like/" + comment.ID,
+                method: "PUT",
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "COMMENTS", id: arg.PostID },
+            ],
+        }),
+        unlikeComment: builder.mutation<Message, CommentDetailed>({
+            query: (comment) => ({
+                url: "/comments/unlike/" + comment.ID,
+                method: "PUT",
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "COMMENTS", id: arg.PostID },
+            ],
+        }),
+        editComment: builder.mutation<Message, CommentDetailed>({
+            query: (comment) => ({
+                url: "/comments/edit/" + comment.ID,
+                method: "PATCH",
+                body: comment,
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "COMMENTS", id: arg.PostID },
+            ],
+        }),
+        deleteComment: builder.mutation<
+            Message,
+            { comment: CommentDetailed; moduleCode: string }
+        >({
+            query: ({ comment, moduleCode }) => ({
+                url: "/comments/delete/" + comment.ID,
+                method: "DELETE",
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: "COMMENTS", id: arg.comment.PostID },
+                { type: "FEED", id: arg.moduleCode },
+                { type: "POST", id: arg.comment.PostID },
+                { type: "FEED", id: "Home" },
+                { type: "FEED", id: "All" },
+            ],
+        }),
+        //SUBS routes
+        getSubs: builder.query<Module[], void>({
+            query: () => ({
+                url: "subs",
+            }),
+            providesTags: ["MODULES"],
         }),
 
         subscribe: builder.mutation<Message, string>({
             query: (moduleCode) => ({
-                url: "subs/sub/"+moduleCode,
+                url: "subs/sub/" + moduleCode,
                 method: "PUT",
+                body: module,
             }),
-            invalidatesTags: ["SUBS"],
+            invalidatesTags: (result, error, arg) => [
+                { type: "MODULE", id: arg },
+                { type: "MODULES" },
+            ],
         }),
 
         unsubscribe: builder.mutation<Message, string>({
             query: (moduleCode) => ({
-                url: "subs/unsub/"+moduleCode,
+                url: "subs/unsub/" + moduleCode,
                 method: "PUT",
+                body: module,
             }),
-            invalidatesTags: ["SUBS"],
+            invalidatesTags: (result, error, arg) => [
+                { type: "MODULE", id: arg },
+                { type: "MODULES" },
+            ],
         }),
 
         //LOGOUT
         logout: builder.mutation<Message, void>({
             query: () => ({
                 url: "logout",
-                method: "POST"
+                method: "POST",
             }),
             invalidatesTags: ["USER"],
-        })
-    })
-})
+        }),
+    }),
+});
 
-export const { useRegisterMutation, useLoginMutation, useValidateQuery, 
-               useGetAllModulesQuery,
-               useGetSubsQuery, useSubscribeMutation, useUnsubscribeMutation,
-               useLogoutMutation} = api
-
+export const {
+    useRegisterMutation,
+    useLoginMutation,
+    useValidateQuery,
+    useGetAllModulesQuery,
+    useGetModuleQuery,
+    useGetModulePostsQuery,
+    useGetTagsQuery,
+    useCreatePostMutation,
+    useLikePostMutation,
+    useUnlikePostMutation,
+    useEditPostMutation,
+    useDeletePostMutation,
+    useGetPostCommentsQuery,
+    useCreateCommentMutation,
+    useLikeCommentMutation,
+    useUnlikeCommentMutation,
+    useEditCommentMutation,
+    useDeleteCommentMutation,
+    useGetPostQuery,
+    useGetSubsQuery,
+    useSubscribeMutation,
+    useUnsubscribeMutation,
+    useLogoutMutation,
+} = api;

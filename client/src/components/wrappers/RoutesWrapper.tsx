@@ -155,7 +155,7 @@ const RoutesWrapper = () => {
                         }
                     />
                     <Route
-                        path="/profile"
+                        path="/profile/:username"
                         element={
                             <AuthWrapper
                                 redirectIfAuth={false}
@@ -167,7 +167,7 @@ const RoutesWrapper = () => {
                         }
                     />
                     <Route
-                        path="/profile/:moduleCode/view/:postIDString"
+                        path="/profile/:username/:moduleCode/view/:postIDString"
                         element={
                             <AuthWrapper
                                 redirectIfAuth={false}

@@ -56,3 +56,12 @@ export interface ModuleDetailed extends Module {
     UserCount: number;
     IsSubscribed: boolean;
 }
+
+//USER interfaces
+export interface UserInfo {
+    Username: string;
+    CreatedAt: Date;
+    NumPosts: number;
+    NumComments: number;
+    NumSubscriptions: number;
+}

@@ -21,6 +21,7 @@ const AuthWrapper = ({
         const modulePath = "/module/";
         const homePath = "/home";
         const allPath = "/all";
+        const profilePath = "/profile/";
         // If the pathname starts with "/module/", extract everything until the next "/"
         const moduleIndex = pathname.indexOf(modulePath);
         if (moduleIndex !== -1) {
@@ -30,10 +31,17 @@ const AuthWrapper = ({
             );
             return endIndex !== -1 ? pathname.substring(0, endIndex) : pathname;
         }
+        const profileIndex = pathname.indexOf(profilePath);
+        if (profileIndex !== -1) {
+            const endIndex = pathname.indexOf(
+                "/",
+                profileIndex + profilePath.length
+            );
+            return endIndex !== -1 ? pathname.substring(0, endIndex) : pathname;
+        }
 
         if (pathname.startsWith(homePath)) return homePath;
         if (pathname.startsWith(allPath)) return allPath;
-
         // If not a "/module/" or "/home" or "/all" path, use the full pathname as the key
         return pathname;
     };

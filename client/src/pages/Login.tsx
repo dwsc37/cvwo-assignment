@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { Credentials, Message } from "../interfaces/interaces";
+import { Credentials, Message } from "../interfaces/interfaces";
 import { useLoginMutation } from "../redux/api";
 
 const Login = () => {

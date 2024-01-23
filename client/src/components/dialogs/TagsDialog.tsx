@@ -5,7 +5,7 @@ import {
     ListItemButton,
     Typography,
 } from "@mui/material";
-import { Tag } from "../../interfaces/interaces";
+import { Tag } from "../../interfaces/interfaces";
 import DoneIcon from "@mui/icons-material/Done";
 
 interface TagsDialogProps {
@@ -22,7 +22,6 @@ const TagsDialog = ({
     handleClose,
     handleSelect,
 }: TagsDialogProps) => {
-    console.log(selectedTags);
     return (
         <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Tags</DialogTitle>

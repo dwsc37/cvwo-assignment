@@ -58,17 +58,28 @@ func GetAllPosts(c *gin.Context){
 }
 
 func GetUserPosts(c *gin.Context){
-	userValue, _ := c.Get("user")
+	username := c.Param("username");
+	var user models.User
+
+	database.DB.First(&user, "username = ?", username)
+
+	if user.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid username",
+		})
+
+		return
+	}
 	var posts []models.Post
 
-	database.DB.Preload("Tags").Where("username = ?",userValue.(models.User).Username).Find(&posts)
+	database.DB.Preload("Tags").Where("username = ?",user.Username).Find(&posts)
 
 	var postListResponse []PostResponse
 
 	for _, post := range posts {
 		commentCount := database.DB.Model(&post).Association("Comments").Count()
 		likeCount := database.DB.Model(&post).Association("LikedUsers").Count()
-		isLiked := (database.DB.Model(&post).Where("id = ?", userValue.(models.User).ID).Association("LikedUsers").Count()) == 1
+		isLiked := (database.DB.Model(&post).Where("id = ?", user.ID).Association("LikedUsers").Count()) == 1
 		postListResponse = append(postListResponse, PostResponse{Post: post, LikeCount: uint(likeCount), CommentCount: uint(commentCount), IsLiked: isLiked})
 	}
 

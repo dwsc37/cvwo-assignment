@@ -1,4 +1,5 @@
 import SearchIcon from "@mui/icons-material/Search";
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 import SellIcon from "@mui/icons-material/Sell";
 import {
     Box,
@@ -8,18 +9,19 @@ import {
     InputAdornment,
     Paper,
     TextField,
+    Tooltip,
     Typography,
     useTheme,
 } from "@mui/material";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { PostDetailed, Tag } from "../interfaces/interaces";
+import { PostDetailed, Tag } from "../interfaces/interfaces";
+import { useGetTagsQuery } from "../redux/api";
 import { convertToCamelCase } from "../util/helper";
 import PostCard from "./cards/PostCard";
 import PostDialog, { PostDialogProps } from "./dialogs/PostDialog";
 import TagsDialog from "./dialogs/TagsDialog";
-import { useGetTagsQuery } from "../redux/api";
 
 interface FeedProps {
     backPath: string;
@@ -56,7 +58,10 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
             setFilteredSortedPosts(posts);
             if (!newSelected) {
                 const tempSorted = [...posts].sort(
-                    (post1, post2) => post2.LikeCount - post1.LikeCount
+                    (post1, post2) =>
+                        post2.LikeCount -
+                        (post2.IsLiked ? 1 : 0) -
+                        (post1.LikeCount - (post1.IsLiked ? 1 : 0))
                 );
                 setFilteredSortedPosts(tempSorted);
             }
@@ -81,12 +86,11 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
 
     const handleTopClick = () => {
         updateNewSelected(false);
-        const tempSorted = [...filteredSortedPosts].sort((post1, post2) =>
-            post2.LikeCount === post1.LikeCount
-                ? moment(post1.CreatedAt).isBefore(moment(post2.CreatedAt))
-                    ? 1
-                    : -1
-                : post2.LikeCount - post1.LikeCount
+        const tempSorted = [...filteredSortedPosts].sort(
+            (post1, post2) =>
+                post2.LikeCount -
+                (post2.IsLiked ? 1 : 0) -
+                (post1.LikeCount - (post1.IsLiked ? 1 : 0))
         );
         setFilteredSortedPosts(tempSorted);
     };
@@ -123,6 +127,46 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
         isLoading: isTagsLoading,
         error: tagsError,
     } = useGetTagsQuery();
+
+    const [searchString, setSearchString] = useState("");
+    const searchSortPost = () => {
+        const calculateScore = (
+            post: PostDetailed,
+            searchString: string,
+            selectedTags: Tag[]
+        ) => {
+            const titleWeight = 2;
+            const contentWeight = 1;
+            const tagWeight = 1;
+
+            let score = 0;
+
+            // Title match
+            if (post.Title.toLowerCase().includes(searchString.toLowerCase())) {
+                score += titleWeight;
+            }
+            // Content match
+            if (post.Body.toLowerCase().includes(searchString.toLowerCase())) {
+                score += contentWeight;
+            }
+
+            // Tags match
+            if (selectedTags.length > 0) {
+                const matchingTags = post.Tags.filter((tag) =>
+                    selectedTags.includes(tag)
+                );
+                score += matchingTags.length * tagWeight;
+            }
+
+            return score;
+        };
+        const tempSorted = [...filteredSortedPosts].sort(
+            (post1, post2) =>
+                calculateScore(post2, searchString, selectedTags) -
+                calculateScore(post1, searchString, selectedTags)
+        );
+        setFilteredSortedPosts(tempSorted);
+    };
     return (
         <Box sx={{ width: "80%" }}>
             <PostDialog {...postDialog} />
@@ -150,11 +194,20 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
                         fullWidth
                         variant="outlined"
                         placeholder={
-                            "Search posts in " +
+                            "Search posts " +
                             (moduleCode
-                                ? moduleCode
-                                : convertToCamelCase(backPath))
+                                ? "in " + moduleCode
+                                : backPath === "/home/" || backPath === "/all"
+                                ? convertToCamelCase(backPath)
+                                : "by " + backPath.split("/")[2])
                         }
+                        value={searchString}
+                        onChange={(
+                            event: React.ChangeEvent<HTMLTextAreaElement>
+                        ) => setSearchString(event.target.value)}
+                        onKeyDown={(event: React.KeyboardEvent) => {
+                            if (event.key === "Enter") searchSortPost();
+                        }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -171,11 +224,30 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
                                 </InputAdornment>
                             ),
                             endAdornment: (
-                                <IconButton
-                                    onClick={() => setShowTagDialog(true)}
-                                >
-                                    <SellIcon />
-                                </IconButton>
+                                <>
+                                    <Tooltip title="Tags">
+                                        <IconButton
+                                            onClick={() =>
+                                                setShowTagDialog(true)
+                                            }
+                                        >
+                                            <SellIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Reset Search">
+                                        <IconButton
+                                            onClick={() => {
+                                                setSearchString("");
+                                                setSelectedTags([]);
+                                                newSelected
+                                                    ? handleNewClick()
+                                                    : handleTopClick();
+                                            }}
+                                        >
+                                            <SearchOffIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </>
                             ),
                         }}
                     ></TextField>

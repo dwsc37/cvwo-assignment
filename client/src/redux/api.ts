@@ -7,8 +7,9 @@ import {
     Post,
     PostDetailed,
     Tag,
-} from "../interfaces/interaces";
-import { Module } from "./../interfaces/interaces";
+    UserInfo,
+} from "../interfaces/interfaces";
+import { Module } from "../interfaces/interfaces";
 
 const baseUrl =
     process.env.NODE_ENV === "development"
@@ -175,9 +176,9 @@ export const api = createApi({
                 { type: "MODULES" },
             ],
         }),
-        getProfilePosts: builder.query<PostDetailed[], void>({
-            query: () => ({
-                url: "profile",
+        getProfilePosts: builder.query<PostDetailed[], string>({
+            query: (username) => ({
+                url: "profile/" + username,
             }),
             providesTags: (result, error, arg) => [{ type: "FEED", id: "All" }],
         }),
@@ -276,6 +277,13 @@ export const api = createApi({
             ],
         }),
 
+        //USER  routes
+        getUserInfo: builder.query<UserInfo, string>({
+            query: (username) => ({
+                url: "/user/" + username,
+            }),
+        }),
+
         //LOGOUT
         logout: builder.mutation<Message, void>({
             query: () => ({
@@ -313,5 +321,6 @@ export const {
     useGetSubsQuery,
     useSubscribeMutation,
     useUnsubscribeMutation,
+    useGetUserInfoQuery,
     useLogoutMutation,
 } = api;

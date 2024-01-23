@@ -20,7 +20,7 @@ import {
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { Message, PostDetailed, Tag } from "../../interfaces/interaces";
+import { Message, PostDetailed, Tag } from "../../interfaces/interfaces";
 import {
     useDeletePostMutation,
     useEditPostMutation,
@@ -278,11 +278,26 @@ const PostCard = ({
                 <Typography
                     variant="subtitle2"
                     color={theme.palette.text.secondary}
+                    component="p"
+                    sx={{ display: "flex", flexDirection: "row", gap: "3px" }}
                 >
                     {"Posted " +
                         calculateDuration(post.CreatedAt) +
-                        " ago by: " +
-                        post.Username}
+                        " ago by:  "}
+                    <CardButton>
+                        <Link
+                            sx={{
+                                ":hover": {
+                                    cursor: "pointer",
+                                },
+                            }}
+                            onClick={() =>
+                                navigate("/profile/" + post.Username)
+                            }
+                        >
+                            {post.Username}
+                        </Link>
+                    </CardButton>
                 </Typography>
                 {editing ? (
                     <Box

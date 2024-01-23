@@ -16,7 +16,7 @@ import {
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import { Message } from "../../interfaces/interaces";
+import { Message } from "../../interfaces/interfaces";
 import { useLogoutMutation, useValidateQuery } from "../../redux/api";
 const Navbar = () => {
     const navigate = useNavigate();
@@ -108,7 +108,7 @@ const Navbar = () => {
                             >
                                 <MenuItem
                                     component={Link}
-                                    to="/profile"
+                                    to={"/profile/" + data?.message}
                                     onClick={handleCloseUserMenu}
                                 >
                                     <ListItemIcon>

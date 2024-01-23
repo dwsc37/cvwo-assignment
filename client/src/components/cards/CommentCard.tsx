@@ -14,7 +14,7 @@ import {
     useTheme,
 } from "@mui/material";
 import { useState } from "react";
-import { CommentDetailed, Message } from "../../interfaces/interaces";
+import { CommentDetailed, Message } from "../../interfaces/interfaces";
 import {
     useDeleteCommentMutation,
     useEditCommentMutation,

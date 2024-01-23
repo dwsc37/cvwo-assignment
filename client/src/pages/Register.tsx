@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import { Credentials, Message } from "../interfaces/interaces";
+import { Credentials, Message } from "../interfaces/interfaces";
 import { useRegisterMutation } from "../redux/api";
 
 const Register = () => {

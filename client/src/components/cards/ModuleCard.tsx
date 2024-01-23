@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { Message, ModuleDetailed } from "../../interfaces/interaces";
+import { Message, ModuleDetailed } from "../../interfaces/interfaces";
 import { useSubscribeMutation, useUnsubscribeMutation } from "../../redux/api";
 import { CardButton } from "../../util/helper";
 interface ModuleCardProps {

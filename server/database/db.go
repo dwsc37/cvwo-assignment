@@ -22,8 +22,6 @@ func ConnectToDB() {
 
 func SyncDB() {
 	DB.AutoMigrate(&models.User{}, &models.Module{}, &models.Post{}, &models.Comment{})
-	//PreloadModules()
-	//PreloadTags()
 }
 
 func ResetDB() {
@@ -48,6 +46,8 @@ func PreloadModules() {
 		{Code: "GEA1000", Name: "Quantitative Reasoning with Data"},
 		{Code: "GESS1004", Name: "Singapore and India: Emerging Relations"},
 		{Code: "EL1101E", Name: "The Nature of Language"},
+		{Code: "CS2100", Name: "Computer Organisation"},
+		{Code: "CS2106", Name: "Introduction to Operating Systems"},
 	}
 
 	for _, module := range modules {
@@ -57,7 +57,7 @@ func PreloadModules() {
 
 func PreloadTags() {
 	tags := []models.Tag{
-		{Name: "Admin"}, {Name: "Discussion"}, {Name: "Assessments"},
+		{Name: "Admin"}, {Name: "Assessments"},  {Name: "Discussion"},{Name: "Feedback"},{Name: "Projects"}, {Name: "Resources"},  
 	}
 
 	for _, tag := range tags {

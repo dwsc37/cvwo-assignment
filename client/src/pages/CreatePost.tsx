@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import ModuleCard from "../components/cards/ModuleCard";
 import TagsDialog from "../components/dialogs/TagsDialog";
-import { Message, Post, Tag } from "../interfaces/interaces";
+import { Message, Post, Tag } from "../interfaces/interfaces";
 import {
     useCreatePostMutation,
     useGetModuleQuery,

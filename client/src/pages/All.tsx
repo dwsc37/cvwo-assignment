@@ -1,20 +1,17 @@
-import { Box, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
+import { Box, Paper, Typography } from "@mui/material";
+import CreatePostSidebar from "../components/CreatePostSidebar";
 import GenericFeed from "../components/GenericFeed";
 import { useGetAllPostsQuery } from "../redux/api";
-import LoadingPage from "./status/LoadingPage";
 import ErrorPage from "./status/ErrorPage";
+import LoadingPage from "./status/LoadingPage";
 
 const All = () => {
-    const navigate = useNavigate();
     const {
         data: posts,
         isLoading: isPostsLoading,
         error: postsError,
     } = useGetAllPostsQuery();
-    const handleCreatePost = () => {
-        navigate("/home/");
-    };
     if (isPostsLoading) return <LoadingPage />;
     if (postsError) return <ErrorPage />;
     return (
@@ -35,13 +32,25 @@ const All = () => {
                     gap: "20px",
                 }}
             >
-                <Button
-                    onClick={handleCreatePost}
-                    fullWidth
-                    variant="contained"
-                >
-                    Create Post
-                </Button>
+                <Paper elevation={5} sx={{ padding: "10px" }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            gap: "10px",
+                            flexDirection: "row",
+                            marginBottom: "10px",
+                        }}
+                    >
+                        <AnalyticsIcon sx={{ width: "40px", height: "40px" }} />
+                        <Typography variant="h4">All</Typography>
+                    </Box>
+                    <Typography variant="h6">
+                        Posts from all of Modulo. Come here to see any new posts
+                        and be part of the conversation.
+                    </Typography>
+                </Paper>
+
+                <CreatePostSidebar />
             </Box>
         </Box>
     );

@@ -14,7 +14,6 @@ import (
 func init() {
 	initialisers.LoadEnv()
 	database.ConnectToDB()
-	//database.ResetDB()
 	database.SyncDB()
 }
 
@@ -75,8 +74,11 @@ func main() {
 	//feed routes
 	r.GET("/api/all", controllers.GetAllPosts)
 	r.GET("/api/home", controllers.GetHomePosts)
-	r.GET("/api/profile", controllers.GetUserPosts)
+	r.GET("/api/profile/:username", controllers.GetUserPosts)
 	
+	//user routes
+	r.GET("/api/user/:username", controllers.GetUserInfo)
+
 	//logout
 	r.POST("/api/logout", controllers.Logout)
 

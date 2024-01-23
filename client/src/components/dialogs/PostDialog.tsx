@@ -3,14 +3,13 @@ import {
     Button,
     Dialog,
     DialogContent,
-    DialogContentText,
-    DialogTitle,
-    IconButton,
     TextField,
     Typography,
 } from "@mui/material";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { Message } from "../../interfaces/interfaces";
 import ErrorPage from "../../pages/status/ErrorPage";
-import CloseIcon from "@mui/icons-material/Close";
 import LoadingPage from "../../pages/status/LoadingPage";
 import {
     useCreateCommentMutation,
@@ -18,13 +17,8 @@ import {
     useGetPostQuery,
     useGetTagsQuery,
 } from "../../redux/api";
-import PostCard from "../cards/PostCard";
-import { useParams } from "react-router-dom";
 import CommentCard from "../cards/CommentCard";
-import { useState } from "react";
-import { create } from "domain";
-import toast from "react-hot-toast";
-import { Message } from "../../interfaces/interaces";
+import PostCard from "../cards/PostCard";
 
 export interface PostDialogProps {
     open: boolean;

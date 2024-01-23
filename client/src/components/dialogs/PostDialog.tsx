@@ -32,6 +32,7 @@ export interface PostDialogProps {
     openEditing: boolean;
     moduleCode: string;
     handleClose: () => void;
+    linkToModule: boolean;
 }
 const PostDialog = ({
     open,
@@ -39,6 +40,7 @@ const PostDialog = ({
     openEditing,
     moduleCode,
     handleClose,
+    linkToModule,
 }: PostDialogProps) => {
     const {
         data: tags,
@@ -101,7 +103,8 @@ const PostDialog = ({
             isPostLoading ||
             isCommentsLoading ||
             (!postError && post && post.ID !== postID) ||
-            (!commentsError &&
+            (!postError &&
+                !commentsError &&
                 ((!comments && post?.CommentCount !== 0) ||
                     (comments && comments[0].PostID !== postID))) ? (
                 <LoadingPage />
@@ -135,6 +138,7 @@ const PostDialog = ({
                     dividers={true}
                 >
                     <PostCard
+                        linkToModule={linkToModule}
                         editable={openEditing}
                         tags={tags}
                         post={post}

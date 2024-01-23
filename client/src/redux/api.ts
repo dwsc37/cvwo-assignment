@@ -6,12 +6,14 @@ import {
     ModuleDetailed,
     Post,
     PostDetailed,
-    PostUpdate,
     Tag,
 } from "../interfaces/interaces";
 import { Module } from "./../interfaces/interaces";
 
-const baseUrl = "http://localhost:8000/api";
+const baseUrl =
+    process.env.NODE_ENV === "development"
+        ? "http://localhost:8080/api"
+        : "/api";
 
 export const api = createApi({
     tagTypes: ["USER", "MODULES", "MODULE", "POST", "COMMENTS", "FEED"],
@@ -23,7 +25,7 @@ export const api = createApi({
             return headers;
         },
     }),
-    keepUnusedDataFor: 60,
+    keepUnusedDataFor: 600,
     endpoints: (builder) => ({
         //AUTH routes
         register: builder.mutation<Message, Credentials>({
@@ -157,6 +159,29 @@ export const api = createApi({
             ],
         }),
 
+        //FEEDS routes
+        getAllPosts: builder.query<PostDetailed[], void>({
+            query: () => ({
+                url: "all",
+            }),
+            providesTags: (result, error, arg) => [{ type: "FEED", id: "All" }],
+        }),
+        getHomePosts: builder.query<PostDetailed[], void>({
+            query: () => ({
+                url: "home",
+            }),
+            providesTags: (result, error, arg) => [
+                { type: "FEED", id: "Home" },
+                { type: "MODULES" },
+            ],
+        }),
+        getProfilePosts: builder.query<PostDetailed[], void>({
+            query: () => ({
+                url: "profile",
+            }),
+            providesTags: (result, error, arg) => [{ type: "FEED", id: "All" }],
+        }),
+
         //COMMENTS routes
         createComment: builder.mutation<
             Message,
@@ -282,6 +307,9 @@ export const {
     useEditCommentMutation,
     useDeleteCommentMutation,
     useGetPostQuery,
+    useGetAllPostsQuery,
+    useGetHomePostsQuery,
+    useGetProfilePostsQuery,
     useGetSubsQuery,
     useSubscribeMutation,
     useUnsubscribeMutation,

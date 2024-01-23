@@ -9,6 +9,10 @@ import Register from "../../pages/Register";
 import Navbar from "../layout/Navbar";
 import Sidebar from "../layout/Sidebar";
 import AuthWrapper from "./AuthWrapper";
+import All from "../../pages/All";
+import { Feed } from "@mui/icons-material";
+import GenericFeed from "../GenericFeed";
+import Profile from "../../pages/Profile";
 
 const RoutesWrapper = () => {
     const pathName = useLocation().pathname;
@@ -64,6 +68,19 @@ const RoutesWrapper = () => {
                             </AuthWrapper>
                         }
                     />
+
+                    <Route
+                        path="/home/:moduleCode/view/:postIDString"
+                        element={
+                            <AuthWrapper
+                                redirectIfAuth={false}
+                                redirectPath="/login"
+                            >
+                                {" "}
+                                <Home />{" "}
+                            </AuthWrapper>
+                        }
+                    />
                     <Route
                         path="/modules"
                         element={
@@ -109,6 +126,55 @@ const RoutesWrapper = () => {
                                 redirectPath="/login"
                             >
                                 <CreatePost />
+                            </AuthWrapper>
+                        }
+                    />
+
+                    <Route
+                        path="/all"
+                        element={
+                            <AuthWrapper
+                                redirectIfAuth={false}
+                                redirectPath="/login"
+                            >
+                                {" "}
+                                <All />{" "}
+                            </AuthWrapper>
+                        }
+                    />
+                    <Route
+                        path="/all/:moduleCode/view/:postIDString"
+                        element={
+                            <AuthWrapper
+                                redirectIfAuth={false}
+                                redirectPath="/login"
+                            >
+                                {" "}
+                                <All />{" "}
+                            </AuthWrapper>
+                        }
+                    />
+                    <Route
+                        path="/profile"
+                        element={
+                            <AuthWrapper
+                                redirectIfAuth={false}
+                                redirectPath="/login"
+                            >
+                                {" "}
+                                <Profile />{" "}
+                            </AuthWrapper>
+                        }
+                    />
+                    <Route
+                        path="/profile/:moduleCode/view/:postIDString"
+                        element={
+                            <AuthWrapper
+                                redirectIfAuth={false}
+                                redirectPath="/login"
+                            >
+                                {" "}
+                                <Profile />{" "}
                             </AuthWrapper>
                         }
                     />

@@ -18,6 +18,14 @@ export const calculateDuration = (date: Date) => {
     return "less than a minute";
 };
 
+export const convertToCamelCase = (str: string) => {
+    // Remove leading and trailing slashes
+    const trimmedStr = str.replace(/^\/|\/$/g, "");
+
+    // Capitalize the first letter
+    return trimmedStr.charAt(0).toUpperCase() + trimmedStr.slice(1);
+};
+
 interface CardButtonProps {
     children: ReactNode;
 }

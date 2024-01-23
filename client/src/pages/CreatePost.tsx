@@ -89,16 +89,10 @@ const CreatePost = () => {
             ...prevData,
             Tags: !postData.Tags.includes(tagSelect)
                 ? postData.Tags.concat([tagSelect])
-                : postData.Tags,
+                : postData.Tags.filter((tag) => tag.ID !== tagSelect.ID),
         }));
     };
 
-    const handleDeleteTag = (tagDelete: Tag) => () => {
-        setPostData((prevData) => ({
-            ...prevData,
-            Tags: postData.Tags.filter((tag: Tag) => tag.ID !== tagDelete.ID),
-        }));
-    };
     return (
         <Box
             sx={{
@@ -193,7 +187,7 @@ const CreatePost = () => {
                             <Chip
                                 key={tag.ID}
                                 label={tag.Name}
-                                onDelete={handleDeleteTag(tag)}
+                                onDelete={handleSelectTag(tag)}
                             />
                         );
                     })}

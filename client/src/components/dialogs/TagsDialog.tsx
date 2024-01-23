@@ -1,5 +1,12 @@
-import { Dialog, ListItemButton } from "@mui/material";
+import {
+    Box,
+    Dialog,
+    DialogTitle,
+    ListItemButton,
+    Typography,
+} from "@mui/material";
 import { Tag } from "../../interfaces/interaces";
+import DoneIcon from "@mui/icons-material/Done";
 
 interface TagsDialogProps {
     open: boolean;
@@ -15,12 +22,29 @@ const TagsDialog = ({
     handleClose,
     handleSelect,
 }: TagsDialogProps) => {
+    console.log(selectedTags);
     return (
         <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>Tags</DialogTitle>
+
             {tags.map((tag) => {
                 return (
-                    <ListItemButton key={tag.ID} onClick={handleSelect(tag)}>
-                        {tag.Name}
+                    <ListItemButton
+                        sx={{ width: "10vw" }}
+                        key={tag.ID}
+                        onClick={handleSelect(tag)}
+                    >
+                        <Typography sx={{ width: "90%" }}>
+                            {tag.Name}
+                        </Typography>
+                        {selectedTags &&
+                        selectedTags.findIndex(
+                            (tagSelected) => tagSelected.ID === tag.ID
+                        ) !== -1 ? (
+                            <DoneIcon sx={{ width: "10%" }} />
+                        ) : (
+                            <Box sx={{ width: "10%" }} />
+                        )}
                     </ListItemButton>
                 );
             })}

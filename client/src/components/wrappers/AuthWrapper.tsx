@@ -18,8 +18,10 @@ const AuthWrapper = ({
     const { isLoading, error } = useValidateQuery(location.pathname);
     const [showPage, setShowPage] = useState(false);
     const deriveKey = (pathname: string) => {
-        // If the pathname starts with "/module/", extract everything until the next "/"
         const modulePath = "/module/";
+        const homePath = "/home";
+        const allPath = "/all";
+        // If the pathname starts with "/module/", extract everything until the next "/"
         const moduleIndex = pathname.indexOf(modulePath);
         if (moduleIndex !== -1) {
             const endIndex = pathname.indexOf(
@@ -29,7 +31,10 @@ const AuthWrapper = ({
             return endIndex !== -1 ? pathname.substring(0, endIndex) : pathname;
         }
 
-        // If not a "/module/" path, use the full pathname as the key
+        if (pathname.startsWith(homePath)) return homePath;
+        if (pathname.startsWith(allPath)) return allPath;
+
+        // If not a "/module/" or "/home" or "/all" path, use the full pathname as the key
         return pathname;
     };
 

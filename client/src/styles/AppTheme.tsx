@@ -14,7 +14,7 @@ const AppTheme = createTheme({
         },
     },
     typography: {
-        fontFamily: "Papyrus",
+        fontFamily: "Roboto",
     },
 });
 export default AppTheme;

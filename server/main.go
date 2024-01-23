@@ -72,8 +72,13 @@ func main() {
 	r.PATCH("/api/comments/edit/:commentID", controllers.EditComment)
 	r.DELETE("/api/comments/delete/:commentID", controllers.DeleteComment)
 
+	//feed routes
+	r.GET("/api/all", controllers.GetAllPosts)
+	r.GET("/api/home", controllers.GetHomePosts)
+	r.GET("/api/profile", controllers.GetUserPosts)
+	
 	//logout
 	r.POST("/api/logout", controllers.Logout)
 
-	r.Run()
+	r.Run(os.Getenv("PORT"))
 }

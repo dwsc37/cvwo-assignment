@@ -10,6 +10,7 @@ import {
     Chip,
     Divider,
     IconButton,
+    Link,
     Paper,
     TextField,
     Tooltip,
@@ -19,12 +20,7 @@ import {
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import {
-    Message,
-    PostDetailed,
-    PostUpdate,
-    Tag,
-} from "../../interfaces/interaces";
+import { Message, PostDetailed, Tag } from "../../interfaces/interaces";
 import {
     useDeletePostMutation,
     useEditPostMutation,
@@ -42,6 +38,7 @@ interface PostCardProps {
     tags?: Tag[];
     handleClick?: () => void;
     parentHandleEdit?: () => void;
+    linkToModule: boolean;
 }
 
 const PostCard = ({
@@ -51,6 +48,7 @@ const PostCard = ({
     fullScreen,
     tags,
     parentHandleEdit,
+    linkToModule,
 }: PostCardProps) => {
     const theme = useTheme();
     const navigate = useNavigate();
@@ -138,14 +136,7 @@ const PostCard = ({
                 editedPost.Tags.findIndex((tag) => tag.ID === tagSelect.ID) ===
                 -1
                     ? editedPost.Tags.concat([tagSelect])
-                    : editedPost.Tags,
-        }));
-    };
-
-    const handleDeleteTag = (tagDelete: Tag) => () => {
-        setEditedPost((prevData) => ({
-            ...prevData,
-            Tags: editedPost.Tags.filter((tag: Tag) => tag.ID !== tagDelete.ID),
+                    : editedPost.Tags.filter((tag) => tag.ID !== tagSelect.ID),
         }));
     };
 
@@ -239,6 +230,23 @@ const PostCard = ({
                     gap: "5px",
                 }}
             >
+                {linkToModule && (
+                    <CardButton>
+                        <Link
+                            onClick={() =>
+                                navigate("/module/" + post.ModuleCode)
+                            }
+                            sx={{
+                                fontSize: "20px",
+                                ":hover": {
+                                    cursor: "pointer",
+                                },
+                            }}
+                        >
+                            {post.ModuleCode}
+                        </Link>
+                    </CardButton>
+                )}
                 {editing ? (
                     <TextField
                         InputLabelProps={{ sx: { fontSize: "28px" } }}
@@ -305,7 +313,7 @@ const PostCard = ({
                                 <Chip
                                     key={tag.ID}
                                     label={tag.Name}
-                                    onDelete={handleDeleteTag(tag)}
+                                    onDelete={handleSelectTag(tag)}
                                 />
                             );
                         })}

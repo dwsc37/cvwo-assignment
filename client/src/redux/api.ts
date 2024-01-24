@@ -90,7 +90,6 @@ export const api = createApi({
             }),
             invalidatesTags: (result, error, arg) => [
                 { type: "FEED", id: arg.ModuleCode },
-                { type: "FEED", id: "Home" },
                 { type: "FEED", id: "All" },
             ],
         }),
@@ -103,7 +102,6 @@ export const api = createApi({
             invalidatesTags: (result, error, arg) => [
                 { type: "FEED", id: arg.ModuleCode },
                 { type: "POST", id: arg.ID },
-                { type: "FEED", id: "Home" },
                 { type: "FEED", id: "All" },
             ],
         }),
@@ -116,7 +114,6 @@ export const api = createApi({
             invalidatesTags: (result, error, arg) => [
                 { type: "FEED", id: arg.ModuleCode },
                 { type: "POST", id: arg.ID },
-                { type: "FEED", id: "Home" },
                 { type: "FEED", id: "All" },
             ],
         }),
@@ -129,7 +126,6 @@ export const api = createApi({
             invalidatesTags: (result, error, arg) => [
                 { type: "FEED", id: arg.ModuleCode },
                 { type: "POST", id: arg.ID },
-                { type: "FEED", id: "Home" },
                 { type: "FEED", id: "All" },
             ],
         }),
@@ -141,7 +137,6 @@ export const api = createApi({
             invalidatesTags: (result, error, arg) => [
                 { type: "FEED", id: arg.ModuleCode },
                 { type: "POST", id: arg.ID },
-                { type: "FEED", id: "Home" },
                 { type: "FEED", id: "All" },
             ],
         }),
@@ -172,7 +167,7 @@ export const api = createApi({
                 url: "home",
             }),
             providesTags: (result, error, arg) => [
-                { type: "FEED", id: "Home" },
+                { type: "FEED", id: "All" },
                 { type: "MODULES" },
             ],
         }),
@@ -197,7 +192,6 @@ export const api = createApi({
                 { type: "COMMENTS", id: arg.postID },
                 { type: "FEED", id: arg.moduleCode },
                 { type: "POST", id: arg.postID },
-                { type: "FEED", id: "Home" },
                 { type: "FEED", id: "All" },
             ],
         }),
@@ -241,7 +235,6 @@ export const api = createApi({
                 { type: "COMMENTS", id: arg.comment.PostID },
                 { type: "FEED", id: arg.moduleCode },
                 { type: "POST", id: arg.comment.PostID },
-                { type: "FEED", id: "Home" },
                 { type: "FEED", id: "All" },
             ],
         }),

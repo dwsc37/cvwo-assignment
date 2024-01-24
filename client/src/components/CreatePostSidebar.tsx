@@ -24,7 +24,6 @@ const CreatePostSidebar = () => {
         setSelectedModule(value);
     };
 
-    if (isLoading || error || !modules) return <></>;
     return (
         <Paper
             elevation={5}
@@ -43,16 +42,34 @@ const CreatePostSidebar = () => {
             <Autocomplete
                 value={selectedModule}
                 onChange={handleModuleChange}
-                options={modules}
-                getOptionLabel={(option) => option.Name}
+                options={modules ? modules : []}
+                getOptionLabel={(option) => option.Code + ": " + option.Name}
                 renderInput={(params) => (
                     <TextField
                         {...params}
                         label="Search for a module"
                         variant="outlined"
                         fullWidth
+                        sx={{ textOverflow: "ellipsis" }}
                     />
                 )}
+                ListboxProps={{
+                    sx: {
+                        "::-webkit-scrollbar": { width: "10px" },
+                        "::-webkit-scrollbar-track": {
+                            background: "rgba(255,255,255,0.1)",
+                            borderRadius: "10px",
+                        },
+                        "::-webkit-scrollbar-thumb": {
+                            background: "#888",
+                            borderRadius: "10px",
+                        },
+                        "::-webkit-scrollbar-thumb:hover": {
+                            background: "#555",
+                        },
+                        scrollbarWidth: "thin",
+                    },
+                }}
             />
             <Button
                 variant="contained"

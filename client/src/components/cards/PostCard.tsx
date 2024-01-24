@@ -233,6 +233,7 @@ const PostCard = ({
                 {linkToModule && (
                     <CardButton>
                         <Link
+                            component="span"
                             onClick={() =>
                                 navigate("/module/" + post.ModuleCode)
                             }
@@ -278,7 +279,6 @@ const PostCard = ({
                 <Typography
                     variant="subtitle2"
                     color={theme.palette.text.secondary}
-                    component="p"
                     sx={{ display: "flex", flexDirection: "row", gap: "3px" }}
                 >
                     {"Posted " +
@@ -286,6 +286,7 @@ const PostCard = ({
                         " ago by:  "}
                     <CardButton>
                         <Link
+                            component="span"
                             sx={{
                                 ":hover": {
                                     cursor: "pointer",
@@ -372,7 +373,14 @@ const PostCard = ({
                         {editedPost.Body}
                     </Typography>
                 )}
-                <Box sx={{ display: "flex", flexDirection: "row", gap: "5px" }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: "5px",
+                        height: "40px",
+                    }}
+                >
                     <CommentIcon />
                     <Typography flexGrow={1}>
                         {post.CommentCount +
@@ -389,47 +397,51 @@ const PostCard = ({
                         ) : (
                             <>
                                 <CardButton>
-                                    <Tooltip title="Edit post">
-                                        <EditIcon
-                                            sx={{
-                                                ":hover": {
-                                                    transform: "scale(1.4)",
+                                    <Box component="span">
+                                        <Tooltip title="Edit post">
+                                            <EditIcon
+                                                sx={{
+                                                    ":hover": {
+                                                        transform: "scale(1.4)",
+                                                        transition:
+                                                            "transform 0.3s ease",
+                                                        cursor: "pointer",
+                                                    },
                                                     transition:
-                                                        "transform 0.3s ease",
-                                                    cursor: "pointer",
-                                                },
-                                                transition:
-                                                    "transform 0.5s ease",
+                                                        "transform 0.5s ease",
 
-                                                height: "32px",
-                                                width: "32px",
-                                            }}
-                                            onClick={
-                                                fullScreen
-                                                    ? () => setEditing(true)
-                                                    : parentHandleEdit
-                                            }
-                                        />
-                                    </Tooltip>
+                                                    height: "32px",
+                                                    width: "32px",
+                                                }}
+                                                onClick={
+                                                    fullScreen
+                                                        ? () => setEditing(true)
+                                                        : parentHandleEdit
+                                                }
+                                            />
+                                        </Tooltip>
+                                    </Box>
                                 </CardButton>
                                 <CardButton>
-                                    <Tooltip title="Delete post">
-                                        <DeleteIcon
-                                            sx={{
-                                                ":hover": {
-                                                    transform: "scale(1.4)",
+                                    <Box component="span">
+                                        <Tooltip title="Delete post">
+                                            <DeleteIcon
+                                                sx={{
+                                                    ":hover": {
+                                                        transform: "scale(1.4)",
+                                                        transition:
+                                                            "transform 0.3s ease",
+                                                        cursor: "pointer",
+                                                    },
                                                     transition:
-                                                        "transform 0.3s ease",
-                                                    cursor: "pointer",
-                                                },
-                                                transition:
-                                                    "transform 0.5s ease",
-                                                height: "32px",
-                                                width: "32px",
-                                            }}
-                                            onClick={handleOpenDelete}
-                                        />
-                                    </Tooltip>
+                                                        "transform 0.5s ease",
+                                                    height: "32px",
+                                                    width: "32px",
+                                                }}
+                                                onClick={handleOpenDelete}
+                                            />
+                                        </Tooltip>
+                                    </Box>
                                 </CardButton>
                             </>
                         )

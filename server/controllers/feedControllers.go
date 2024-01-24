@@ -14,7 +14,7 @@ func GetHomePosts(c *gin.Context){
 
 	var user models.User
 
-	database.DB.Preload("Modules.Posts").First(&user, userValue.(models.User).ID)
+	database.DB.Preload("Modules.Posts.Tags").First(&user, userValue.(models.User).ID)
 
 
 	var postListResponse []PostResponse
@@ -58,6 +58,7 @@ func GetAllPosts(c *gin.Context){
 }
 
 func GetUserPosts(c *gin.Context){
+	origUser, _ := c.Get("user");
 	username := c.Param("username");
 	var user models.User
 
@@ -79,7 +80,7 @@ func GetUserPosts(c *gin.Context){
 	for _, post := range posts {
 		commentCount := database.DB.Model(&post).Association("Comments").Count()
 		likeCount := database.DB.Model(&post).Association("LikedUsers").Count()
-		isLiked := (database.DB.Model(&post).Where("id = ?", user.ID).Association("LikedUsers").Count()) == 1
+		isLiked := (database.DB.Model(&post).Where("id = ?", origUser.(models.User).ID).Association("LikedUsers").Count()) == 1
 		postListResponse = append(postListResponse, PostResponse{Post: post, LikeCount: uint(likeCount), CommentCount: uint(commentCount), IsLiked: isLiked})
 	}
 

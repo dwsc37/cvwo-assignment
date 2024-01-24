@@ -13,7 +13,6 @@ import {
     Typography,
     useTheme,
 } from "@mui/material";
-import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PostDetailed, Tag } from "../interfaces/interfaces";
@@ -54,20 +53,6 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
     >(posts ? posts : []);
 
     useEffect(() => {
-        if (posts) {
-            setFilteredSortedPosts(posts);
-            if (!newSelected) {
-                const tempSorted = [...posts].sort(
-                    (post1, post2) =>
-                        post2.LikeCount -
-                        (post2.IsLiked ? 1 : 0) -
-                        (post1.LikeCount - (post1.IsLiked ? 1 : 0))
-                );
-                setFilteredSortedPosts(tempSorted);
-            }
-        }
-    }, [posts]);
-    useEffect(() => {
         setPostDialog((prevData) => ({
             ...prevData,
             moduleCode: moduleCode ? moduleCode : prevData.moduleCode,
@@ -78,21 +63,9 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
     }, [postIDString, postDialog.open, moduleCode, navigate, scrollPos]);
     const handleNewClick = () => {
         updateNewSelected(true);
-        const tempSorted = [...filteredSortedPosts].sort((post1, post2) =>
-            moment(post1.CreatedAt).isBefore(moment(post2.CreatedAt)) ? 1 : -1
-        );
-        setFilteredSortedPosts(tempSorted);
     };
-
     const handleTopClick = () => {
         updateNewSelected(false);
-        const tempSorted = [...filteredSortedPosts].sort(
-            (post1, post2) =>
-                post2.LikeCount -
-                (post2.IsLiked ? 1 : 0) -
-                (post1.LikeCount - (post1.IsLiked ? 1 : 0))
-        );
-        setFilteredSortedPosts(tempSorted);
     };
 
     const handleSelectPost = (post: PostDetailed) => {
@@ -129,44 +102,56 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
     } = useGetTagsQuery();
 
     const [searchString, setSearchString] = useState("");
-    const searchSortPost = () => {
-        const calculateScore = (
-            post: PostDetailed,
-            searchString: string,
-            selectedTags: Tag[]
-        ) => {
-            const titleWeight = 2;
-            const contentWeight = 1;
-            const tagWeight = 1;
+    const [searchQuery, setSearchQuery] = useState("");
+    useEffect(() => {
+        if (posts) {
+            var tempFiltered =
+                selectedTags.length === 0
+                    ? posts
+                    : posts.filter((post) =>
+                          selectedTags.every(
+                              (selectTag) =>
+                                  post.Tags.filter(
+                                      (tag) => selectTag.ID == tag.ID
+                                  ).length !== 0
+                          )
+                      );
+            if (searchQuery !== "") {
+                const includeSearchString = (post: PostDetailed) => {
+                    // Title match
+                    if (
+                        post.Title.toLowerCase().includes(
+                            searchQuery.toLowerCase()
+                        )
+                    )
+                        return true;
+                    // Content match
+                    if (
+                        post.Body.toLowerCase().includes(
+                            searchQuery.toLowerCase()
+                        )
+                    )
+                        return true;
 
-            let score = 0;
-
-            // Title match
-            if (post.Title.toLowerCase().includes(searchString.toLowerCase())) {
-                score += titleWeight;
-            }
-            // Content match
-            if (post.Body.toLowerCase().includes(searchString.toLowerCase())) {
-                score += contentWeight;
-            }
-
-            // Tags match
-            if (selectedTags.length > 0) {
-                const matchingTags = post.Tags.filter((tag) =>
-                    selectedTags.includes(tag)
+                    return false;
+                };
+                tempFiltered = tempFiltered.filter((post) =>
+                    includeSearchString(post)
                 );
-                score += matchingTags.length * tagWeight;
             }
-
-            return score;
-        };
-        const tempSorted = [...filteredSortedPosts].sort(
-            (post1, post2) =>
-                calculateScore(post2, searchString, selectedTags) -
-                calculateScore(post1, searchString, selectedTags)
-        );
-        setFilteredSortedPosts(tempSorted);
-    };
+            if (!newSelected) {
+                const tempSorted = [...tempFiltered].sort(
+                    (post1, post2) =>
+                        post2.LikeCount -
+                        (post2.IsLiked ? 1 : 0) -
+                        (post1.LikeCount - (post1.IsLiked ? 1 : 0))
+                );
+                setFilteredSortedPosts(tempSorted);
+            } else {
+                setFilteredSortedPosts(tempFiltered);
+            }
+        }
+    }, [posts, newSelected, selectedTags, searchQuery]);
     return (
         <Box sx={{ width: "80%" }}>
             <PostDialog {...postDialog} />
@@ -198,7 +183,7 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
                             (moduleCode
                                 ? "in " + moduleCode
                                 : backPath === "/home/" || backPath === "/all"
-                                ? convertToCamelCase(backPath)
+                                ? "in " + convertToCamelCase(backPath)
                                 : "by " + backPath.split("/")[2])
                         }
                         value={searchString}
@@ -206,7 +191,8 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
                             event: React.ChangeEvent<HTMLTextAreaElement>
                         ) => setSearchString(event.target.value)}
                         onKeyDown={(event: React.KeyboardEvent) => {
-                            if (event.key === "Enter") searchSortPost();
+                            if (event.key === "Enter")
+                                setSearchQuery(searchString);
                         }}
                         InputProps={{
                             startAdornment: (
@@ -238,10 +224,8 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
                                         <IconButton
                                             onClick={() => {
                                                 setSearchString("");
+                                                setSearchQuery("");
                                                 setSelectedTags([]);
-                                                newSelected
-                                                    ? handleNewClick()
-                                                    : handleTopClick();
                                             }}
                                         >
                                             <SearchOffIcon />

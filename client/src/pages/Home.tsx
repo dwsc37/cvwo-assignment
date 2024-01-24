@@ -46,7 +46,7 @@ const Home = () => {
                     </Box>
                     <Typography variant="h6">
                         Your personal Modulo front page. View posts from your
-                        subscribed communities
+                        subscribed communities here.
                     </Typography>
                 </Paper>
 

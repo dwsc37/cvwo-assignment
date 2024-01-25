@@ -3,13 +3,13 @@ import {
     CommentDetailed,
     Credentials,
     Message,
+    Module,
     ModuleDetailed,
     Post,
     PostDetailed,
     Tag,
     UserInfo,
 } from "../interfaces/interfaces";
-import { Module } from "../interfaces/interfaces";
 
 const baseUrl =
     process.env.NODE_ENV === "development"

@@ -62,8 +62,7 @@ go run main.go
 
 ### Database
 
-By default, there is a .env file in /server, which will allow the app (when run locally) to connect to the same database as the live version.
-(note: this is just to facillitate easy access/grading, storing the .env data online is not secures)
+In /cvwo-assignment/server, create a .env file and populate it with the values given in the writeup. This automatically connects to the same database that is being used by the live version
 
 To use an alternative PostGresQL database, just modify the value of DB in the .env file.
 

@@ -122,4 +122,4 @@ Images ran on EC2 instance, app accessible via link above.
 ## Future Work/Improvements
 
 -   Implementing pagination for posts and comments
--   Improving responsiveness of like button
+-   Adding in admin/superuser functionalities/pages

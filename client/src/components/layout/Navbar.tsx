@@ -62,11 +62,13 @@ const Navbar = () => {
         <AppBar sx={{ zIndex: 2 }}>
             <Toolbar>
                 <Box
-                    onClick={() => navigate("/home")}
+                    onClick={() => {
+                        if (data) navigate("/home");
+                    }}
                     sx={{
                         display: "flex",
                         flexDirection: "row",
-                        ":hover": { cursor: "pointer" },
+                        ":hover": { cursor: data ? "pointer" : "auto" },
                     }}
                 >
                     <ForumIcon

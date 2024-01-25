@@ -3,8 +3,11 @@
 ## Overview
 
 This is my (Dave Wong) submission for the CVWO Winter Assignment 23/24.
-The app is a web forum intended to be used by NUS students. There are various communities (NUS modules) which users can subscribe to to customise their experience.
+
+The app is a web forum intended to be used by NUS students to post and discuss about the modules they are taking. Users can subscribe to different modules to customise their experience.
+
 It is hosted on AWS at http://modulo.ddns.net
+
 Alternative address (if ddns does not work): http://54.255.234.127/
 
 ## Setting Up the Repository

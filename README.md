@@ -8,9 +8,9 @@ The app is a web forum intended to be used by NUS students to post and discuss a
 
 The frontend is built with React, Typescript and MUI. The backend is built with Go, using Gin and GORM. All communication from frontend to backend is done using RTK Query.
 
-It is hosted on AWS at http://modulo.ddns.net/login
+It is hosted on AWS at http://modulo.ddns.net
 
-Alternative address (if ddns does not work): http://54.255.234.127/login
+Alternative address (if ddns does not work): http://54.255.234.127
 
 ## Setting Up the Repository
 

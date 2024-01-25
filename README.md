@@ -6,9 +6,11 @@ This is my (Dave Wong) submission for the CVWO Winter Assignment 23/24.
 
 The app is a web forum intended to be used by NUS students to post and discuss about the modules they are taking. Users can subscribe to different modules to customise their experience.
 
+The frontend is built with React, Typescript and MUI. The backend is built with Go, using Gin and GORM. All communication from frontend to backend is done using RTK Query.
+
 It is hosted on AWS at http://modulo.ddns.net
 
-Alternative address (if ddns does not work): http://54.255.234.127/
+Alternative address (if ddns does not work): http://54.255.234.127
 
 ## Setting Up the Repository
 
@@ -58,6 +60,13 @@ go install
 go run main.go
 ```
 
+### Database
+
+By default, there is a .env file in /server, which will allow the app (when run locally) to connect to the same database as the live version.
+(note: this is just to facillitate easy access/grading, storing the .env data online is not secures)
+
+To use an alternative PostGresQL database, just modify the value of DB in the .env file.
+
 ## Features
 
 ### Authentication Pages
@@ -65,13 +74,8 @@ go run main.go
 -   /login
 -   /register
 
-Authentication is done using JWTs. JWT is issued by backend to frontend upon succesful login via a HTTP-only cookie.
-This cookie is required to access all other pages in app.
-It is also required to send requests to the backend (except login and register).
-
-### RTK Query
-
-All communication between frontend and backend is done using RTK queries, allowing for caching of queries after the first retrieval.
+Authentiation is done using JWTs. A JWT is issued by the backend to the frontend upon succesful login via a HTTP-only cookie.
+This cookie is required to access all other pages in the app. It is also required to send requests to the backend (except login and register).
 
 ### Feed Pages
 
@@ -97,6 +101,7 @@ Clicking on a post card opens a dialog which additionally allows:
 
 -   Commeting on the post
 -   Viewing all comments
+-   Sorting comments by new or top
 -   Liking/unliking comments
 -   Editing/deleting your own comments
 
@@ -114,3 +119,8 @@ Clicking on a post card opens a dialog which additionally allows:
 Individual docker images built for client and server (dockerfiles can be viewed in respective folders)
 Docker images saved as tar files and uploaded via scp to an AWS EC2 instance.
 Images ran on EC2 instance, app accessible via link above.
+
+## Future Work/Improvements
+
+-   Implementing pagination for posts and comments
+-   Improving responsiveness of like button

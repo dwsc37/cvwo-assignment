@@ -36,7 +36,7 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
     );
     const navigate = useNavigate();
     const { moduleCode, postIDString } = useParams();
-    const [newSelected, updateNewSelected] = useState(true);
+    const [newSelected, setNewSelected] = useState(true);
     const [postDialog, setPostDialog] = useState<PostDialogProps>({
         open: false,
         postID: -1,
@@ -62,10 +62,10 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
         if (scrollRef.current) scrollRef.current.scrollTop = scrollPos;
     }, [postIDString, postDialog.open, moduleCode, navigate, scrollPos]);
     const handleNewClick = () => {
-        updateNewSelected(true);
+        setNewSelected(true);
     };
     const handleTopClick = () => {
-        updateNewSelected(false);
+        setNewSelected(false);
     };
 
     const handleSelectPost = (post: PostDetailed) => {
@@ -102,7 +102,6 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
     } = useGetTagsQuery();
 
     const [searchString, setSearchString] = useState("");
-    const [searchQuery, setSearchQuery] = useState("");
     useEffect(() => {
         if (posts) {
             var tempFiltered =
@@ -116,19 +115,19 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
                                   ).length !== 0
                           )
                       );
-            if (searchQuery !== "") {
+            if (searchString !== "") {
                 const includeSearchString = (post: PostDetailed) => {
                     // Title match
                     if (
                         post.Title.toLowerCase().includes(
-                            searchQuery.toLowerCase()
+                            searchString.toLowerCase()
                         )
                     )
                         return true;
                     // Content match
                     if (
                         post.Body.toLowerCase().includes(
-                            searchQuery.toLowerCase()
+                            searchString.toLowerCase()
                         )
                     )
                         return true;
@@ -150,8 +149,10 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
             } else {
                 setFilteredSortedPosts(tempFiltered);
             }
+        } else {
+            setFilteredSortedPosts([]);
         }
-    }, [posts, newSelected, selectedTags, searchQuery]);
+    }, [posts, newSelected, selectedTags, searchString]);
     return (
         <Box sx={{ width: "80%" }}>
             <PostDialog {...postDialog} />
@@ -190,10 +191,6 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
                         onChange={(
                             event: React.ChangeEvent<HTMLTextAreaElement>
                         ) => setSearchString(event.target.value)}
-                        onKeyDown={(event: React.KeyboardEvent) => {
-                            if (event.key === "Enter")
-                                setSearchQuery(searchString);
-                        }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -224,7 +221,6 @@ const GenericFeed = ({ backPath, posts, linkToModule }: FeedProps) => {
                                         <IconButton
                                             onClick={() => {
                                                 setSearchString("");
-                                                setSearchQuery("");
                                                 setSelectedTags([]);
                                             }}
                                         >

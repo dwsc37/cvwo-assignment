@@ -1,6 +1,10 @@
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import {
     Avatar,
     Button,
+    IconButton,
+    InputAdornment,
     Paper,
     TextField,
     Typography,
@@ -20,7 +24,7 @@ const Register = () => {
         Username: "",
         Password: "",
     });
-
+    const [showPassword, setShowPassword] = useState(false);
     const handleUsernameChange = (
         event: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
@@ -88,11 +92,27 @@ const Register = () => {
             <TextField
                 label="Password"
                 placeholder="Enter password"
-                type="password"
+                type={showPassword ? "auto" : "password"}
                 value={credentials.Password}
                 onChange={handlePasswordChange}
                 fullWidth
                 required
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <IconButton
+                                onClick={() => setShowPassword(!showPassword)}
+                                edge="end"
+                            >
+                                {showPassword ? (
+                                    <VisibilityIcon />
+                                ) : (
+                                    <VisibilityOffIcon />
+                                )}
+                            </IconButton>
+                        </InputAdornment>
+                    ),
+                }}
             />
             <Button
                 type="submit"

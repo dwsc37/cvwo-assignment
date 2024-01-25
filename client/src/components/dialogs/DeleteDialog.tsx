@@ -21,7 +21,14 @@ const DeleteDialog = ({
     handleConfirm,
 }: DeleteDialogProps) => {
     return (
-        <Dialog open={open} onClose={handleClose}>
+        <Dialog
+            open={open}
+            onClick={(event: React.MouseEvent) => {
+                event.stopPropagation();
+                handleClose();
+            }}
+            onClose={handleClose}
+        >
             <DialogTitle>{"Delete this " + type + "?"}</DialogTitle>
             <DialogContent>
                 <DialogContentText>

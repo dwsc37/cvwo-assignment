@@ -3,12 +3,13 @@ import {
     Button,
     Dialog,
     DialogContent,
+    Paper,
     TextField,
     Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Message } from "../../interfaces/interfaces";
+import { CommentDetailed, Message } from "../../interfaces/interfaces";
 import ErrorPage from "../../pages/status/ErrorPage";
 import LoadingPage from "../../pages/status/LoadingPage";
 import {
@@ -80,6 +81,31 @@ const PostDialog = ({
             },
         });
     };
+    const [newSelected, setNewSelected] = useState(true);
+    const handleNewClick = () => {
+        setNewSelected(true);
+    };
+    const handleTopClick = () => {
+        setNewSelected(false);
+    };
+    const [sortedComments, setSortedComments] = useState<CommentDetailed[]>([]);
+    useEffect(() => {
+        if (comments) {
+            if (!newSelected) {
+                const tempSorted = [...comments].sort(
+                    (post1, post2) =>
+                        post2.LikeCount -
+                        (post2.IsLiked ? 1 : 0) -
+                        (post1.LikeCount - (post1.IsLiked ? 1 : 0))
+                );
+                setSortedComments(tempSorted);
+            } else {
+                setSortedComments(comments);
+            }
+        } else {
+            setSortedComments([]);
+        }
+    }, [comments, newSelected]);
     return (
         <Dialog
             PaperProps={{
@@ -137,6 +163,7 @@ const PostDialog = ({
                         tags={tags}
                         post={post}
                         fullScreen={true}
+                        parentHandleDelete={handleClose}
                     />
                     <Box>
                         <Typography>Add a comment</Typography>
@@ -192,8 +219,32 @@ const PostDialog = ({
                             gap: "10px",
                         }}
                     >
-                        {comments ? (
-                            comments.map((comment) => (
+                        <Box
+                            sx={{
+                                width: "100%",
+                                display: "flex",
+                                flexDirection: "row",
+                                marginBottom: "10px",
+                                gap: "10px",
+                            }}
+                        >
+                            <Button
+                                onClick={handleNewClick}
+                                variant={newSelected ? "contained" : "outlined"}
+                            >
+                                New
+                            </Button>
+                            <Button
+                                onClick={handleTopClick}
+                                variant={
+                                    !newSelected ? "contained" : "outlined"
+                                }
+                            >
+                                Top
+                            </Button>
+                        </Box>
+                        {sortedComments.length !== 0 ? (
+                            sortedComments.map((comment) => (
                                 <CommentCard
                                     key={comment.ID}
                                     moduleCode={moduleCode}

@@ -3,9 +3,14 @@ import { Box, Paper, Typography } from "@mui/material";
 import moment from "moment";
 import { useParams } from "react-router-dom";
 import GenericFeed from "../components/GenericFeed";
-import { useGetProfilePostsQuery, useGetUserInfoQuery } from "../redux/api";
+import {
+    useGetProfilePostsQuery,
+    useGetUserInfoQuery,
+    useValidateQuery,
+} from "../redux/api";
 import ErrorPage from "./status/ErrorPage";
 import LoadingPage from "./status/LoadingPage";
+import CreatePostSidebar from "../components/CreatePostSidebar";
 
 const Profile = () => {
     const { username } = useParams();
@@ -19,6 +24,7 @@ const Profile = () => {
         isLoading: isUserLoading,
         error: userError,
     } = useGetUserInfoQuery(username ? username : "");
+    const { data } = useValidateQuery();
     if (isPostsLoading || isUserLoading) return <LoadingPage />;
     if (postsError || userError || !userInfo) return <ErrorPage />;
     return (
@@ -71,6 +77,7 @@ const Profile = () => {
                         {"Subscriptions: " + userInfo.NumSubscriptions}
                     </Typography>
                 </Paper>
+                {data?.message === userInfo.Username && <CreatePostSidebar />}
             </Box>
         </Box>
     );

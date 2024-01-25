@@ -38,6 +38,7 @@ interface PostCardProps {
     tags?: Tag[];
     handleClick?: () => void;
     parentHandleEdit?: () => void;
+    parentHandleDelete?: () => void;
     linkToModule: boolean;
 }
 
@@ -48,6 +49,7 @@ const PostCard = ({
     fullScreen,
     tags,
     parentHandleEdit,
+    parentHandleDelete,
     linkToModule,
 }: PostCardProps) => {
     const theme = useTheme();
@@ -116,7 +118,7 @@ const PostCard = ({
         toast.promise(promise, {
             loading: "Deleting post...",
             success: (payload: Message) => {
-                navigate("/module/" + post.ModuleCode);
+                if (parentHandleDelete) parentHandleDelete();
                 return payload.message;
             },
             error: (payload) => {

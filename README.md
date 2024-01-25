@@ -73,7 +73,7 @@ To use an alternative PostGresQL database, just modify the value of DB in the .e
 -   /login
 -   /register
 
-Authentiation is done using JWTs. A JWT is issued by the backend to the frontend upon succesful login via a HTTP-only cookie.
+Authentication is done using JWTs. A JWT is issued by the backend to the frontend upon successful login via a HTTP-only cookie.
 This cookie is required to access all other pages in the app. It is also required to send requests to the backend (except login and register).
 
 ### Feed Pages
@@ -98,7 +98,7 @@ Each post card displayed in a feed allows the following:
 
 Clicking on a post card opens a dialog which additionally allows:
 
--   Commeting on the post
+-   Commenting on the post
 -   Viewing all comments
 -   Sorting comments by new or top
 -   Liking/unliking comments
